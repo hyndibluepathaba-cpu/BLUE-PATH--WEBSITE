@@ -104,6 +104,14 @@ display: none;
       <style>
         #ap textarea{width:100%;min-height:84px;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-sizing:border-box;resize:vertical}
         #ap .chk{display:flex;flex-wrap:wrap;gap:8px 18px}
+        #ap .avail{display:grid;grid-template-columns:44px repeat(6,1fr);gap:4px;font-size:12px}
+        #ap .avail .h{font-weight:700;color:#56708F;text-align:center;line-height:1.15;padding:2px 0}
+        #ap .avail button.d{font-family:inherit;font-weight:700;font-size:13px;color:#16325C;background:none;border:0;padding:0;text-align:left;cursor:pointer;min-height:40px}
+        #ap .avail label{display:block;position:relative;cursor:pointer;margin:0}
+        #ap .avail input{position:absolute;opacity:0;width:1px;height:1px}
+        #ap .avail span{display:flex;align-items:center;justify-content:center;min-height:40px;border:2px solid #D3E3F5;border-radius:8px;background:#fff;color:transparent;font-weight:700;font-size:16px}
+        #ap .avail input:checked+span{background:#1C7BE3;border-color:#1C7BE3;color:#fff}
+        #ap .avail input:focus-visible+span{outline:3px solid #FFB547}
         #ap .chk label,#ap .agree label{display:flex;gap:10px;align-items:flex-start;font-weight:400;cursor:pointer}
         #ap .chk input,#ap .agree input{width:22px;min-height:22px;height:22px;flex:0 0 22px;margin:2px 0 0;padding:0}
         #ap .agree{display:flex;flex-direction:column;gap:10px;font-size:15px}
@@ -149,14 +157,12 @@ display: none;
       <div class="field"><label>Which program are you interested in? (choose all that apply) <span class="req">(required)</span></label>
         <div class="chk" id="ap-program"><label><input type="checkbox" value="1:1 hourly ABA therapy"> 1:1 hourly ABA therapy</label><label><input type="checkbox" value="10-month educational program (includes 1:1 ABA therapy)"> 10-month educational program (includes 1:1 ABA therapy)</label><label><input type="checkbox" value="ABA-focused summer program"> ABA-focused summer program</label></div></div>
 
-      <p class="step">Preferred schedule</p>
-      <div style="background:#FFF1D6;border-radius:12px;padding:12px 14px;margin:0 0 12px;font-size:15px;line-height:1.45;color:#16325C">Please share the days and times that work best for your family. Your child's schedule is finalized after coordinating with your BCBA and our clinical team, and we will review it with you before services begin.</div>
-      <div class="field"><label>Which days work best? (choose all that apply) <span class="req">(required)</span></label>
-        <div class="chk" id="ap-days"><label><input type="checkbox" value="Monday"> Monday</label><label><input type="checkbox" value="Tuesday"> Tuesday</label><label><input type="checkbox" value="Wednesday"> Wednesday</label><label><input type="checkbox" value="Thursday"> Thursday</label><label><input type="checkbox" value="Friday"> Friday</label></div></div>
-      <div class="field"><label>Which times work best? (choose all that apply) <span class="req">(required)</span></label>
-        <div class="chk" id="ap-times"><label><input type="checkbox" value="Mornings (8 AM to 12 PM)"> Mornings (8 AM to 12 PM)</label><label><input type="checkbox" value="Early afternoons (12 PM to 3 PM)"> Early afternoons (12 PM to 3 PM)</label><label><input type="checkbox" value="Late afternoons (3 PM to 6 PM)"> Late afternoons (3 PM to 6 PM)</label></div>
-        <p class="fine">Our hours are Monday to Friday, 8 AM to 6 PM.</p></div>
-      <div class="field"><label for="ap-schednote">Anything else about your schedule? (optional)</label><textarea id="ap-schednote" placeholder="For example: school pickup at 2:30, or no sessions on Wednesdays after 4"></textarea></div>
+      <p class="step">Your availability</p>
+      <div style="background:#FFF1D6;border-radius:12px;padding:12px 14px;margin:0 0 12px;font-size:15px;line-height:1.45;color:#16325C">Tap <b>every</b> time your child could come, even times you would rather not use. This is not your final schedule. The more times you mark, the sooner we can match your child with a therapist.</div>
+      <div class="field"><label>When is your child available? <span class="req">(required)</span></label>
+        <p class="fine" style="margin:0 0 8px">Tap a box to mark it. Tap a day's name to mark the whole day.</p>
+        <div id="ap-avail" class="avail"></div></div>
+<div class="field"><label for="ap-schednote">Anything else about your availability? (optional)</label><textarea id="ap-schednote" placeholder="For example: in school until 2:30 on weekdays, or Grandma can bring him on Saturdays"></textarea></div>
 
       <p class="step">Funding</p>
       <div class="field"><label>How will you pay for services? (choose all that apply) <span class="req">(required)</span></label>
@@ -421,8 +427,7 @@ display: none;
     for(var i = 0; i < need.length; i++){ if(!v(need[i][0])){ g(need[i][0]).focus(); return e.textContent = 'Please add ' + need[i][1] + '.'; } }
     if(!checked('ap-setting')) return e.textContent = 'Choose where you would like therapy.';
     if(!checked('ap-program')) return e.textContent = 'Choose which program you are interested in.';
-    if(!checked('ap-days')) return e.textContent = 'Choose the days that work best for your schedule.';
-    if(!checked('ap-times')) return e.textContent = 'Choose the times that work best for your schedule.';
+    if(!g('ap-avail').querySelector('input:checked')) return e.textContent = 'Please mark the times your child is available.';
     var bnames = {sib:'self-injurious behavior', agg:'physical aggression', prop:'property destruction', elope:'running away', tant:'tantrums or meltdowns', oth:'other challenging behavior'};
     for(var bk in bnames){ if(/^Yes/.test(v('ap-b-' + bk)) && v('ap-bx-' + bk).length < 10){ g('ap-bx-' + bk).focus(); return e.textContent = 'Please describe the ' + bnames[bk] + ' in at least one sentence.'; } }
     if(v('ap-danger') === 'Yes' && v('ap-dangerx').length < 10){ g('ap-dangerx').focus(); return e.textContent = 'Please explain the injury in at least one sentence.'; }
@@ -448,11 +453,12 @@ display: none;
         dx1:v('ap-dx1'), dx1_date:v('ap-dx1date'), dx1_by:v('ap-dx1by'), dx_age:v('ap-dxage'), dx2:v('ap-dx2'), dx2_date:v('ap-dx2date'),
         funding:checked('ap-funding'), ins_co:(v('ap-insco') === 'Other' ? 'Other: ' + v('ap-insother') : v('ap-insco')), ins2_co:v('ap-ins2'), ins2_id:v('ap-ins2id'), sch_id:v('ap-schid'), ph_name:v('ap-phname'), ph_dob:v('ap-phdob'), policy:v('ap-policy'), group:v('ap-group'), ins_phone:v('ap-insphone'),
         peanut:v('ap-peanut'), epipen:v('ap-epipen'), allergies:v('ap-allergies'), meds:v('ap-meds'), therapies:v('ap-therapies'), communicates:checked('ap-comm'), toilet:v('ap-toilet'),
-        program:checked('ap-program'), sched_days:checked('ap-days'), sched_times:checked('ap-times'), sched_note:v('ap-schednote'), b_sib:v('ap-b-sib'), bx_sib:v('ap-bx-sib'), b_agg:v('ap-b-agg'), bx_agg:v('ap-bx-agg'), b_prop:v('ap-b-prop'), bx_prop:v('ap-bx-prop'), b_elope:v('ap-b-elope'), bx_elope:v('ap-bx-elope'), b_tant:v('ap-b-tant'), bx_tant:v('ap-bx-tant'), b_oth:v('ap-b-oth'), bx_oth:v('ap-bx-oth'), danger:v('ap-danger'), danger_explain:v('ap-dangerx'), expectations:v('ap-expect'),
+        program:checked('ap-program'), sched_days:bpAvail().days, sched_times:bpAvail().times, sched_note:v('ap-schednote'), b_sib:v('ap-b-sib'), bx_sib:v('ap-bx-sib'), b_agg:v('ap-b-agg'), bx_agg:v('ap-bx-agg'), b_prop:v('ap-b-prop'), bx_prop:v('ap-bx-prop'), b_elope:v('ap-b-elope'), bx_elope:v('ap-bx-elope'), b_tant:v('ap-b-tant'), bx_tant:v('ap-bx-tant'), b_oth:v('ap-b-oth'), bx_oth:v('ap-bx-oth'), danger:v('ap-danger'), danger_explain:v('ap-dangerx'), expectations:v('ap-expect'),
         p1_name:v('ap-p1name'), p1_rel:v('ap-p1rel'), p1_dob:v('ap-p1dob'), p1_phone:v('ap-p1phone'), p1_email:v('ap-p1email'),
         p2_name:v('ap-p2name'), p2_rel:v('ap-p2rel'), p2_dob:v('ap-p2dob'), p2_phone:v('ap-p2phone'), p2_email:v('ap-p2email'),
         agree:checked('ap-agree'), sign_name:v('ap-sign'), sign_date:v('ap-date')};
     Object.keys(map).forEach(function(k){ fdata.append(k, map[k] || ''); });
+    try{ fdata.append('body_html_nodocs', bpBodyHtml(map, false)); fdata.append('body_html', bpBodyHtml(map, true)); }catch(err){}
     /* app PDF paused: proven email layout */
     var LIMIT = 4200000;
     Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ var base=(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'); var asPdf = Promise.resolve(''); return asPdf.then(function(pdf){ if(pdf) return {type:doc[0], name:base.replace(/\.[^.]+$/, '') + '.pdf', data:pdf}; return b64(f).then(function(data){ return {type:doc[0], name:base, data:data}; }); }); }); })).then(function(files){
@@ -559,6 +565,67 @@ var ElementPackConfig = {"ajaxurl":"/wp-admin/admin-ajax.php","nonce":"3a07c9bd6
  } .fluentform_wrapper_4.ffs_modern_b_wrap .ff-el-group input[type=radio]:checked:after {
  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E");
  } </style> <script defer src="/wp-content/uploads/siteground-optimizer-assets/siteground-optimizer-combined-js-f1097fc2497e6daab9b235209f302d91.js"></script><script>
+/* Availability grid: days x 2-hour blocks */
+var BP_DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], BP_SLOTS=['8-10 AM','10-12','12-2 PM','2-4 PM','4-6 PM','After 6'];
+(function(){
+  var box=document.getElementById('ap-avail'); if(!box) return;
+  var h='<div></div>'+BP_SLOTS.map(function(t){ return '<div class="h">'+t.replace(' ','<br>')+'</div>'; }).join('');
+  BP_DAYS.forEach(function(d){
+    h+='<button type="button" class="d" data-day="'+d+'">'+d.slice(0,3)+'</button>';
+    BP_SLOTS.forEach(function(t){ h+='<label><input type="checkbox" data-day="'+d+'" value="'+t+'" aria-label="'+d+' '+t+'"><span>\u2713</span></label>'; });
+  });
+  box.innerHTML=h;
+  box.addEventListener('click', function(ev){
+    var b=ev.target.closest('button.d'); if(!b) return;
+    var cs=box.querySelectorAll('input[data-day="'+b.dataset.day+'"]'), all=[].every.call(cs,function(c){return c.checked;});
+    [].forEach.call(cs,function(c){ c.checked=!all; });
+  });
+})();
+function bpAvail(){
+  var box=document.getElementById('ap-avail'), days=[], lines=[];
+  BP_DAYS.forEach(function(d){
+    var on=[].filter.call(box.querySelectorAll('input[data-day="'+d+'"]'),function(c){return c.checked;}).map(function(c){return c.value;});
+    if(on.length){ days.push(d); lines.push(d+': '+(on.length===BP_SLOTS.length?'all day':on.join(', '))); }
+  });
+  return {days:days.join(', '), times:lines.join(' | ')};
+}
+/* Builds the office email body on the site so wording changes never need Make edits. */
+function bpBodyHtml(m, withDocs){
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  var S=[
+   ['How they heard about us',[['How did you hear about us','hear'],['Therapy location','setting']]],
+   ['Child',[['First name','c_first'],['Last name','c_last'],['Date of birth','c_dob'],['Age','c_age'],['Sex','c_sex'],['Home address','c_addr'],['School','c_school']]],
+   ['Diagnosis',[['Primary diagnosis','dx1'],['Date diagnosed','dx1_date'],['Diagnosed by','dx1_by'],['Age at diagnosis','dx_age'],['Secondary diagnosis','dx2'],['Date diagnosed (secondary)','dx2_date']]],
+   ['AVAIL'],
+   ['Funding and insurance',[['Program','program'],['Funding','funding'],['Insurance company','ins_co'],['Policyholder name','ph_name'],['Policyholder date of birth','ph_dob'],['Policy / member number','policy'],['Group number','group'],['Provider phone number','ins_phone'],['Secondary insurance','ins2_co'],['Secondary member number','ins2_id'],['Step Up / VPK-SIS student ID','sch_id']]],
+   ['Health',[['Peanut allergy','peanut'],['EpiPen','epipen'],['Other allergies','allergies'],['Current medications','meds']]],
+   ['Therapy and behavior',[['Current / past therapies','therapies'],['How child communicates','communicates'],['Toilet trained','toilet'],['Self-injurious behavior','b_sib'],['Details','bx_sib'],['Physical aggression','b_agg'],['Details','bx_agg'],['Property destruction','b_prop'],['Details','bx_prop'],['Running away','b_elope'],['Details','bx_elope'],['Tantrums or meltdowns','b_tant'],['Details','bx_tant'],['Other challenging behavior','b_oth'],['Details','bx_oth'],['Caused injury','danger'],['Explanation','danger_explain'],['Expectations for ABA','expectations']]],
+   ['Parent / guardian 1',[['Name','p1_name'],['Relationship','p1_rel'],['Date of birth','p1_dob'],['Phone','p1_phone'],['Email','p1_email']]],
+   ['Parent / guardian 2',[['Name','p2_name'],['Relationship','p2_rel'],['Date of birth','p2_dob'],['Phone','p2_phone'],['Email','p2_email']]],
+   ['Agreements',[['Agreed to','agree'],['Signed (full name)','sign_name'],['Date','sign_date']]]
+  ];
+  var H='<p style="margin:16px 0 4px;font-weight:700;color:#1C7BE3">', TD='<td style="padding:2px 12px 2px 0;color:#52647d;vertical-align:top">', TV='<td style="padding:2px 0">';
+  var o='<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#13263f"><p style="margin:0 0 12px"><span style="display:inline-block;background:#1C7BE3;color:#fff;font-weight:700;font-size:13px;padding:4px 10px;border-radius:6px">APPLICATION · CAME FROM: '+esc(String(m.source||'Website').toUpperCase())+'</span></p>';
+  o+='<p><b>A family sent their application on the website.</b> Reference: '+esc(m.ref)+'. '+(withDocs?'The diagnostic report and doctor referral are attached to this email.':'The documents were too large to attach together, so they arrive as separate emails with the same reference.')+'</p>';
+  S.forEach(function(sec){
+    if(sec[0]==='AVAIL'){
+      o+=H+'Availability (every time the family marked, not a final schedule)</p>';
+      var box=document.getElementById('ap-avail');
+      o+='<table style="border-collapse:collapse;font-size:13px;text-align:center"><tr><td></td>'+BP_SLOTS.map(function(t){return '<td style="padding:3px 6px;color:#52647d;font-weight:700">'+esc(t)+'</td>';}).join('')+'</tr>';
+      BP_DAYS.forEach(function(d){
+        o+='<tr><td style="padding:3px 8px 3px 0;text-align:left;font-weight:700">'+d.slice(0,3)+'</td>';
+        BP_SLOTS.forEach(function(t){ var c=box && box.querySelector('input[data-day="'+d+'"][value="'+t+'"]'); var on=c&&c.checked; o+='<td style="padding:3px 6px;border:1px solid #D3E3F5;'+(on?'background:#1C7BE3;color:#fff;font-weight:700':'color:#c0c8d4')+'">'+(on?'&#10003;':'-')+'</td>'; });
+        o+='</tr>';
+      });
+      o+='</table><table style="border-collapse:collapse;margin-top:6px"><tr>'+TD+'Notes</td>'+TV+esc(m.sched_note)+'</td></tr></table>';
+      return;
+    }
+    o+=H+esc(sec[0])+'</p><table style="border-collapse:collapse">';
+    sec[1].forEach(function(r){ var val=m[r[1]]; if(r[0]==='Details' && !val) return; o+='<tr>'+TD+(r[0]==='Details'?'&nbsp;&nbsp;':'')+esc(r[0])+'</td>'+TV+esc(val)+'</td></tr>'; });
+    o+='</table>';
+  });
+  return o+'</div>';
+}
 /* Test shortcut: bluepathaba.com/apply/?bptest=7342 fills every answer with fake TEST data and attaches two sample photos. */
 (function(){
   if(!/[?&]bptest=7342\b/.test(location.search)) return;
@@ -599,7 +666,7 @@ function bpAppPdf(m){
    ['How they heard about us',[['How did you hear about us','hear'],['Therapy location','setting']]],
    ['Child',[['First name','c_first'],['Last name','c_last'],['Date of birth','c_dob'],['Age','c_age'],['Sex','c_sex'],['Home address','c_addr'],['School','c_school']]],
    ['Diagnosis',[['Primary diagnosis','dx1'],['Date diagnosed','dx1_date'],['Diagnosed by','dx1_by'],['Age at diagnosis','dx_age'],['Secondary diagnosis','dx2'],['Date diagnosed (secondary)','dx2_date']]],
-   ['Preferred schedule (finalized after coordinating with the BCBA)',[['Days','sched_days'],['Times','sched_times'],['Notes','sched_note']]],
+   ['Availability',[['Days available','sched_days'],['Times by day','sched_times'],['Notes','sched_note']]],
    ['Funding and insurance',[['Program','program'],['Funding','funding'],['Insurance company','ins_co'],['Policyholder name','ph_name'],['Policyholder date of birth','ph_dob'],['Policy / member number','policy'],['Group number','group'],['Provider phone number','ins_phone'],['Secondary insurance','ins2_co'],['Secondary member number','ins2_id'],['Step Up / VPK-SIS student ID','sch_id']]],
    ['Health',[['Peanut allergy','peanut'],['EpiPen','epipen'],['Other allergies','allergies'],['Current medications','meds']]],
    ['Therapy and behavior',[['Current / past therapies','therapies'],['How child communicates','communicates'],['Toilet trained','toilet'],['Self-injurious behavior','b_sib'],['  Details','bx_sib'],['Physical aggression','b_agg'],['  Details','bx_agg'],['Property destruction','b_prop'],['  Details','bx_prop'],['Running away','b_elope'],['  Details','bx_elope'],['Tantrums or meltdowns','b_tant'],['  Details','bx_tant'],['Other challenging behavior','b_oth'],['  Details','bx_oth'],['Caused injury','danger'],['Explanation','danger_explain'],['Expectations for ABA','expectations']]],
