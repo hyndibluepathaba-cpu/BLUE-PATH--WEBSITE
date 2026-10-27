@@ -453,8 +453,9 @@ display: none;
         p2_name:v('ap-p2name'), p2_rel:v('ap-p2rel'), p2_dob:v('ap-p2dob'), p2_ssn:v('ap-p2ssn'), p2_phone:v('ap-p2phone'), p2_email:v('ap-p2email'),
         agree:checked('ap-agree'), sign_name:v('ap-sign'), sign_date:v('ap-date')};
     Object.keys(map).forEach(function(k){ fdata.append(k, map[k] || ''); });
+    try{ var pdf64 = bpAppPdf(map); if(pdf64) fdata.append('app_pdf', pdf64); }catch(err){}
     var LIMIT = 4200000;
-    Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ return b64(f).then(function(data){ return {type:doc[0], name:(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'), data:data}; }); }); })).then(function(files){
+    Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ var base=(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'); var asPdf = (/^image\//.test(f.type) && window.bpImgPdf) ? window.bpImgPdf([{blob:f, label:''}], doc[0]) : Promise.resolve(''); return asPdf.then(function(pdf){ if(pdf) return {type:doc[0], name:base.replace(/\.[^.]+$/, '') + '.pdf', data:pdf}; return b64(f).then(function(data){ return {type:doc[0], name:base, data:data}; }); }); }); })).then(function(files){
       var one = new URLSearchParams(fdata.toString());
       files.forEach(function(f, n){ one.append('doc' + (n + 1) + '_type', f.type); one.append('doc' + (n + 1) + '_name', f.name); one.append('doc' + (n + 1) + '_data', f.data); });
       if (one.toString().length < LIMIT) return post(one);
@@ -587,5 +588,42 @@ var ElementPackConfig = {"ajaxurl":"/wp-admin/admin-ajax.php","nonce":"3a07c9bd6
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', run); else run();
 })();
+</script>
+<script src="/wp-content/uploads/bluepath/jspdf.umd.min.js"></script>
+<script src="/wp-content/uploads/bluepath/bp-pdf.js"></script>
+<script>
+/* Builds the application answers into a PDF (base64) so the office gets it as its own file. */
+function bpAppPdf(m){
+  if(!window.jspdf || !window.jspdf.jsPDF) return '';
+  var S=[
+   ['How they heard about us',[['How did you hear about us','hear'],['Therapy location','setting']]],
+   ['Child',[['First name','c_first'],['Last name','c_last'],['Date of birth','c_dob'],['Age','c_age'],['Sex','c_sex'],['SSN','c_ssn'],['Home address','c_addr'],['School','c_school']]],
+   ['Diagnosis',[['Primary diagnosis','dx1'],['Date diagnosed','dx1_date'],['Diagnosed by','dx1_by'],['Age at diagnosis','dx_age'],['Secondary diagnosis','dx2'],['Date diagnosed (secondary)','dx2_date']]],
+   ['Preferred schedule (finalized after coordinating with the BCBA)',[['Days','sched_days'],['Times','sched_times'],['Notes','sched_note']]],
+   ['Funding and insurance',[['Program','program'],['Funding','funding'],['Insurance company','ins_co'],['Policyholder name','ph_name'],['Policyholder date of birth','ph_dob'],['Policy / member number','policy'],['Group number','group'],['Provider phone number','ins_phone'],['Secondary insurance','ins2_co'],['Secondary member number','ins2_id'],['Step Up / VPK-SIS student ID','sch_id']]],
+   ['Health',[['Peanut allergy','peanut'],['EpiPen','epipen'],['Other allergies','allergies'],['Current medications','meds']]],
+   ['Therapy and behavior',[['Current / past therapies','therapies'],['How child communicates','communicates'],['Toilet trained','toilet'],['Self-injurious behavior','b_sib'],['  Details','bx_sib'],['Physical aggression','b_agg'],['  Details','bx_agg'],['Property destruction','b_prop'],['  Details','bx_prop'],['Running away','b_elope'],['  Details','bx_elope'],['Tantrums or meltdowns','b_tant'],['  Details','bx_tant'],['Other challenging behavior','b_oth'],['  Details','bx_oth'],['Caused injury','danger'],['Explanation','danger_explain'],['Expectations for ABA','expectations']]],
+   ['Parent / guardian 1',[['Name','p1_name'],['Relationship','p1_rel'],['Date of birth','p1_dob'],['SSN','p1_ssn'],['Phone','p1_phone'],['Email','p1_email']]],
+   ['Parent / guardian 2',[['Name','p2_name'],['Relationship','p2_rel'],['Date of birth','p2_dob'],['SSN','p2_ssn'],['Phone','p2_phone'],['Email','p2_email']]],
+   ['Agreements',[['Agreed to','agree'],['Signed (full name)','sign_name'],['Date','sign_date']]]
+  ];
+  var d=new window.jspdf.jsPDF({unit:'pt',format:'letter'}), L=54, R=558, y=60, W=R-L, LW=170;
+  function need(h){ if(y+h>740){ d.addPage(); y=60; } }
+  d.setFont('helvetica','bold'); d.setFontSize(18); d.setTextColor(22,50,92); d.text('Blue Path ABA - Application', L, y); y+=20;
+  d.setFont('helvetica','normal'); d.setFontSize(10); d.setTextColor(86,112,143);
+  d.text('Reference: '+(m.ref||'')+'    Sent: '+new Date().toLocaleString()+'    Came from: '+(m.source||'Website'), L, y); y+=10;
+  d.setDrawColor(211,227,245); d.line(L,y,R,y); y+=18;
+  S.forEach(function(sec){
+    need(40); d.setFont('helvetica','bold'); d.setFontSize(12); d.setTextColor(28,123,227); d.text(sec[0], L, y); y+=16;
+    sec[1].forEach(function(r){
+      var v=String(m[r[1]]==null?'':m[r[1]]).trim(); if(!v && /Details/.test(r[0])) return;
+      var lines=d.splitTextToSize(v||'-', W-LW); need(lines.length*13+4);
+      d.setFont('helvetica','normal'); d.setFontSize(10); d.setTextColor(86,112,143); d.text(r[0].trim(), L, y);
+      d.setTextColor(19,38,63); d.text(lines, L+LW, y); y+=lines.length*13+4;
+    });
+    y+=8;
+  });
+  return String(d.output('datauristring')).split(',')[1]||'';
+}
 </script>
 </body></html>
