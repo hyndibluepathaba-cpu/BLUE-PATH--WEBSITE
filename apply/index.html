@@ -557,4 +557,35 @@ var ElementPackConfig = {"ajaxurl":"/wp-admin/admin-ajax.php","nonce":"3a07c9bd6
  padding-left: 2px;
  } .fluentform_wrapper_4.ffs_modern_b_wrap .ff-el-group input[type=radio]:checked:after {
  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E");
- } </style> <script defer src="/wp-content/uploads/siteground-optimizer-assets/siteground-optimizer-combined-js-f1097fc2497e6daab9b235209f302d91.js"></script></body></html>
+ } </style> <script defer src="/wp-content/uploads/siteground-optimizer-assets/siteground-optimizer-combined-js-f1097fc2497e6daab9b235209f302d91.js"></script><script>
+/* Test shortcut: bluepathaba.com/apply/?bptest=7342 fills every answer with fake TEST data and attaches two sample photos. */
+(function(){
+  if(!/[?&]bptest=7342\b/.test(location.search)) return;
+  function run(){
+    var gate=document.getElementById('ap-gate'), app=document.getElementById('ap'); if(gate) gate.hidden=true; if(app) app.hidden=false;
+    var form=document.getElementById('ap-form'); if(!form) return;
+    form.querySelectorAll('input,select,textarea').forEach(function(el){
+      if(el.type==='file') return;
+      if(el.type==='checkbox'){ el.checked=true; return; }
+      if(el.type==='radio'){ var n=form.querySelector('input[type=radio][name="'+el.name+'"]'); if(n) n.checked=true; return; }
+      if(el.tagName==='SELECT'){ var o=[].slice.call(el.options).filter(function(o){return o.value && !/^yes/i.test(o.value);})[0] || el.options[el.options.length-1]; el.value=o.value; el.dispatchEvent(new Event('change')); return; }
+      if(el.type==='date'){ el.value='2020-01-01'; return; }
+      if(el.type==='email'){ el.value='test@bluepathaba.com'; return; }
+      if(el.type==='tel'){ el.value='407-324-7772'; return; }
+      if(el.type==='number'){ el.value='5'; return; }
+      el.value='TEST';
+    });
+    var d=document.getElementById('ap-date'); if(d) d.value=new Date().toISOString().slice(0,10);
+    function pic(label, id){
+      var c=document.createElement('canvas'); c.width=800; c.height=1000; var x=c.getContext('2d');
+      x.fillStyle='#ffffff'; x.fillRect(0,0,800,1000); x.fillStyle='#1C7BE3'; x.font='bold 60px sans-serif'; x.fillText('TEST', 60, 140); x.fillStyle='#16325C'; x.font='40px sans-serif'; x.fillText(label, 60, 220);
+      c.toBlob(function(b){ try{ var f=new File([b], label.replace(/\s+/g,'-')+'-TEST.jpg', {type:'image/jpeg'}); var dt=new DataTransfer(); dt.items.add(f); document.getElementById(id).files=dt.files; }catch(e){} }, 'image/jpeg', 0.8);
+    }
+    pic('Diagnostic report','ap-dxfile'); pic('Doctor referral','ap-reffile');
+    var bar=document.createElement('div'); bar.textContent='TEST MODE: everything is filled in with fake answers. Scroll down and tap Send.'; bar.style.cssText='position:sticky;top:0;z-index:50;background:#FFB547;color:#16325C;font:700 16px sans-serif;padding:10px 14px;text-align:center';
+    app.insertBefore(bar, app.firstChild);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
+</script>
+</body></html>
