@@ -134,7 +134,7 @@ display: none;
       <div class="two"><div class="field"><label for="ap-cdob">Date of birth <span class="req">(required)</span></label><input id="ap-cdob" type="date"></div>
       <div class="field"><label for="ap-cage">Age</label><input id="ap-cage" type="text" inputmode="numeric"></div></div>
       <div class="two"><div class="field"><label for="ap-csex">Sex</label><select id="ap-csex"><option value="">Choose</option><option>Male</option><option>Female</option></select></div>
-      <div class="field"><label for="ap-cssn">Social Security number</label><input id="ap-cssn" type="password" inputmode="numeric" autocomplete="off" class="ssn" placeholder="•••-••-••••"><label class="show"><input type="checkbox" data-for="ap-cssn"> Show</label></div></div>
+      <div class="field"></div></div>
       <div class="field"><label for="ap-school">Current school (put N/A if not attending)</label><input id="ap-school" type="text"></div>
 
       <p class="step">Diagnosis</p>
@@ -210,7 +210,7 @@ display: none;
       <div class="two"><div class="field"><label for="ap-p1name">Full name <span class="req">(required)</span></label><input id="ap-p1name" type="text" autocomplete="name"></div>
       <div class="field"><label for="ap-p1rel">Relationship to child</label><input id="ap-p1rel" type="text" placeholder="Mom, Dad, Grandparent…"></div></div>
       <div class="two"><div class="field"><label for="ap-p1dob">Date of birth</label><input id="ap-p1dob" type="date"></div>
-      <div class="field"><label for="ap-p1ssn">Social Security number</label><input id="ap-p1ssn" type="password" inputmode="numeric" autocomplete="off" class="ssn" placeholder="•••-••-••••"><label class="show"><input type="checkbox" data-for="ap-p1ssn"> Show</label></div></div>
+      <div class="field"></div></div>
       <div class="two"><div class="field"><label for="ap-p1phone">Phone <span class="req">(required)</span></label><input id="ap-p1phone" type="tel" autocomplete="tel"></div>
       <div class="field"><label for="ap-p1email">Email <span class="req">(required)</span></label><input id="ap-p1email" type="email" autocomplete="email"></div></div>
 
@@ -218,7 +218,7 @@ display: none;
       <div class="two"><div class="field"><label for="ap-p2name">Full name</label><input id="ap-p2name" type="text"></div>
       <div class="field"><label for="ap-p2rel">Relationship to child</label><input id="ap-p2rel" type="text"></div></div>
       <div class="two"><div class="field"><label for="ap-p2dob">Date of birth</label><input id="ap-p2dob" type="date"></div>
-      <div class="field"><label for="ap-p2ssn">Social Security number</label><input id="ap-p2ssn" type="password" inputmode="numeric" autocomplete="off" class="ssn" placeholder="•••-••-••••"><label class="show"><input type="checkbox" data-for="ap-p2ssn"> Show</label></div></div>
+      <div class="field"></div></div>
       <div class="two"><div class="field"><label for="ap-p2phone">Phone</label><input id="ap-p2phone" type="tel"></div>
       <div class="field"><label for="ap-p2email">Email</label><input id="ap-p2email" type="email"></div></div>
 
@@ -444,13 +444,13 @@ display: none;
     btn.disabled = true; btn.textContent = 'Sending… please keep this page open';
     var fdata = new URLSearchParams();
     var map = {kind:'application', ref:ref, source:(window.bpSource ? bpSource() : 'Website'), hear:v('ap-hear'), setting:checked('ap-setting'),
-        c_first:v('ap-cfirst'), c_last:v('ap-clast'), c_addr:v('ap-caddr'), c_dob:v('ap-cdob'), c_age:v('ap-cage'), c_sex:v('ap-csex'), c_ssn:v('ap-cssn'), c_school:v('ap-school'),
+        c_first:v('ap-cfirst'), c_last:v('ap-clast'), c_addr:v('ap-caddr'), c_dob:v('ap-cdob'), c_age:v('ap-cage'), c_sex:v('ap-csex'), c_school:v('ap-school'),
         dx1:v('ap-dx1'), dx1_date:v('ap-dx1date'), dx1_by:v('ap-dx1by'), dx_age:v('ap-dxage'), dx2:v('ap-dx2'), dx2_date:v('ap-dx2date'),
         funding:checked('ap-funding'), ins_co:(v('ap-insco') === 'Other' ? 'Other: ' + v('ap-insother') : v('ap-insco')), ins2_co:v('ap-ins2'), ins2_id:v('ap-ins2id'), sch_id:v('ap-schid'), ph_name:v('ap-phname'), ph_dob:v('ap-phdob'), policy:v('ap-policy'), group:v('ap-group'), ins_phone:v('ap-insphone'),
         peanut:v('ap-peanut'), epipen:v('ap-epipen'), allergies:v('ap-allergies'), meds:v('ap-meds'), therapies:v('ap-therapies'), communicates:checked('ap-comm'), toilet:v('ap-toilet'),
         program:checked('ap-program'), sched_days:checked('ap-days'), sched_times:checked('ap-times'), sched_note:v('ap-schednote'), b_sib:v('ap-b-sib'), bx_sib:v('ap-bx-sib'), b_agg:v('ap-b-agg'), bx_agg:v('ap-bx-agg'), b_prop:v('ap-b-prop'), bx_prop:v('ap-bx-prop'), b_elope:v('ap-b-elope'), bx_elope:v('ap-bx-elope'), b_tant:v('ap-b-tant'), bx_tant:v('ap-bx-tant'), b_oth:v('ap-b-oth'), bx_oth:v('ap-bx-oth'), danger:v('ap-danger'), danger_explain:v('ap-dangerx'), expectations:v('ap-expect'),
-        p1_name:v('ap-p1name'), p1_rel:v('ap-p1rel'), p1_dob:v('ap-p1dob'), p1_ssn:v('ap-p1ssn'), p1_phone:v('ap-p1phone'), p1_email:v('ap-p1email'),
-        p2_name:v('ap-p2name'), p2_rel:v('ap-p2rel'), p2_dob:v('ap-p2dob'), p2_ssn:v('ap-p2ssn'), p2_phone:v('ap-p2phone'), p2_email:v('ap-p2email'),
+        p1_name:v('ap-p1name'), p1_rel:v('ap-p1rel'), p1_dob:v('ap-p1dob'), p1_phone:v('ap-p1phone'), p1_email:v('ap-p1email'),
+        p2_name:v('ap-p2name'), p2_rel:v('ap-p2rel'), p2_dob:v('ap-p2dob'), p2_phone:v('ap-p2phone'), p2_email:v('ap-p2email'),
         agree:checked('ap-agree'), sign_name:v('ap-sign'), sign_date:v('ap-date')};
     Object.keys(map).forEach(function(k){ fdata.append(k, map[k] || ''); });
     /* app PDF paused: proven email layout */
@@ -597,14 +597,14 @@ function bpAppPdf(m){
   if(!window.jspdf || !window.jspdf.jsPDF) return '';
   var S=[
    ['How they heard about us',[['How did you hear about us','hear'],['Therapy location','setting']]],
-   ['Child',[['First name','c_first'],['Last name','c_last'],['Date of birth','c_dob'],['Age','c_age'],['Sex','c_sex'],['SSN','c_ssn'],['Home address','c_addr'],['School','c_school']]],
+   ['Child',[['First name','c_first'],['Last name','c_last'],['Date of birth','c_dob'],['Age','c_age'],['Sex','c_sex'],['Home address','c_addr'],['School','c_school']]],
    ['Diagnosis',[['Primary diagnosis','dx1'],['Date diagnosed','dx1_date'],['Diagnosed by','dx1_by'],['Age at diagnosis','dx_age'],['Secondary diagnosis','dx2'],['Date diagnosed (secondary)','dx2_date']]],
    ['Preferred schedule (finalized after coordinating with the BCBA)',[['Days','sched_days'],['Times','sched_times'],['Notes','sched_note']]],
    ['Funding and insurance',[['Program','program'],['Funding','funding'],['Insurance company','ins_co'],['Policyholder name','ph_name'],['Policyholder date of birth','ph_dob'],['Policy / member number','policy'],['Group number','group'],['Provider phone number','ins_phone'],['Secondary insurance','ins2_co'],['Secondary member number','ins2_id'],['Step Up / VPK-SIS student ID','sch_id']]],
    ['Health',[['Peanut allergy','peanut'],['EpiPen','epipen'],['Other allergies','allergies'],['Current medications','meds']]],
    ['Therapy and behavior',[['Current / past therapies','therapies'],['How child communicates','communicates'],['Toilet trained','toilet'],['Self-injurious behavior','b_sib'],['  Details','bx_sib'],['Physical aggression','b_agg'],['  Details','bx_agg'],['Property destruction','b_prop'],['  Details','bx_prop'],['Running away','b_elope'],['  Details','bx_elope'],['Tantrums or meltdowns','b_tant'],['  Details','bx_tant'],['Other challenging behavior','b_oth'],['  Details','bx_oth'],['Caused injury','danger'],['Explanation','danger_explain'],['Expectations for ABA','expectations']]],
-   ['Parent / guardian 1',[['Name','p1_name'],['Relationship','p1_rel'],['Date of birth','p1_dob'],['SSN','p1_ssn'],['Phone','p1_phone'],['Email','p1_email']]],
-   ['Parent / guardian 2',[['Name','p2_name'],['Relationship','p2_rel'],['Date of birth','p2_dob'],['SSN','p2_ssn'],['Phone','p2_phone'],['Email','p2_email']]],
+   ['Parent / guardian 1',[['Name','p1_name'],['Relationship','p1_rel'],['Date of birth','p1_dob'],['Phone','p1_phone'],['Email','p1_email']]],
+   ['Parent / guardian 2',[['Name','p2_name'],['Relationship','p2_rel'],['Date of birth','p2_dob'],['Phone','p2_phone'],['Email','p2_email']]],
    ['Agreements',[['Agreed to','agree'],['Signed (full name)','sign_name'],['Date','sign_date']]]
   ];
   var d=new window.jspdf.jsPDF({unit:'pt',format:'letter'}), L=54, R=558, y=60, W=R-L, LW=170;
