@@ -263,7 +263,7 @@ display: none;
       d.append('source', window.bpSource ? bpSource() : 'Website');
       d.append('card_front', f[0]); d.append('card_back', f[1]);
       var sname = g('bc-sname').value.trim();
-      return window.bpImgPdf ? window.bpImgPdf([{blob:SH[0], label:'Front of card'},{blob:SH[1], label:'Back of card'}], 'Insurance card - ' + sname).then(function(pdf){ if(pdf) d.append('cards_pdf', pdf); return fetch(HOOK, {method:'POST', mode:'no-cors', body:d}); }) : fetch(HOOK, {method:'POST', mode:'no-cors', body:d});
+      return fetch(HOOK, {method:'POST', mode:'no-cors', body:d});
     }).then(function(){
       box.className = 'wb center';
       box.innerHTML = '<div class="badge" aria-hidden="true">✓</div><h2>Thank you!</h2><p>We got your information. We\'ll check your benefits and call you to go over exactly what\'s covered.</p><p style="margin:0"><b>Questions? Call, text or email us.</b></p>' + CBTN;

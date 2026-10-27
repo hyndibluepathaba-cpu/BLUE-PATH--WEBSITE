@@ -453,9 +453,9 @@ display: none;
         p2_name:v('ap-p2name'), p2_rel:v('ap-p2rel'), p2_dob:v('ap-p2dob'), p2_ssn:v('ap-p2ssn'), p2_phone:v('ap-p2phone'), p2_email:v('ap-p2email'),
         agree:checked('ap-agree'), sign_name:v('ap-sign'), sign_date:v('ap-date')};
     Object.keys(map).forEach(function(k){ fdata.append(k, map[k] || ''); });
-    try{ var pdf64 = bpAppPdf(map); if(pdf64) fdata.append('app_pdf', pdf64); }catch(err){}
+    /* app PDF paused: proven email layout */
     var LIMIT = 4200000;
-    Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ var base=(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'); var asPdf = (/^image\//.test(f.type) && window.bpImgPdf) ? window.bpImgPdf([{blob:f, label:''}], doc[0]) : Promise.resolve(''); return asPdf.then(function(pdf){ if(pdf) return {type:doc[0], name:base.replace(/\.[^.]+$/, '') + '.pdf', data:pdf}; return b64(f).then(function(data){ return {type:doc[0], name:base, data:data}; }); }); }); })).then(function(files){
+    Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ var base=(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'); var asPdf = Promise.resolve(''); return asPdf.then(function(pdf){ if(pdf) return {type:doc[0], name:base.replace(/\.[^.]+$/, '') + '.pdf', data:pdf}; return b64(f).then(function(data){ return {type:doc[0], name:base, data:data}; }); }); }); })).then(function(files){
       var one = new URLSearchParams(fdata.toString());
       files.forEach(function(f, n){ one.append('doc' + (n + 1) + '_type', f.type); one.append('doc' + (n + 1) + '_name', f.name); one.append('doc' + (n + 1) + '_data', f.data); });
       if (one.toString().length < LIMIT) return post(one);
