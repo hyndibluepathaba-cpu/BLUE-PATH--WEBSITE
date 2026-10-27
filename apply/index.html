@@ -562,7 +562,7 @@ var ElementPackConfig = {"ajaxurl":"/wp-admin/admin-ajax.php","nonce":"3a07c9bd6
 (function(){
   if(!/[?&]bptest=7342\b/.test(location.search)) return;
   function run(){
-    var gate=document.getElementById('ap-gate'), app=document.getElementById('ap'); if(gate) gate.hidden=true; if(app) app.hidden=false;
+    var gate=document.getElementById('ap-gate'), app=document.getElementById('ap'); if(gate) gate.hidden=true; if(app) app.hidden=false; var pop=document.getElementById('ap-pop'); if(pop) pop.hidden=true; document.documentElement.style.overflow=''; document.body.style.overflow='';
     var form=document.getElementById('ap-form'); if(!form) return;
     form.querySelectorAll('input,select,textarea').forEach(function(el){
       if(el.type==='file') return;
