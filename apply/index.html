@@ -460,17 +460,28 @@ display: none;
     Object.keys(map).forEach(function(k){ fdata.append(k, map[k] || ''); });
     try{ fdata.append('body_html_nodocs', bpBodyHtml(map, false)); fdata.append('body_html', bpBodyHtml(map, true)); }catch(err){}
     /* app PDF paused: proven email layout */
-    var LIMIT = 4200000;
-    Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ var base=(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'); var asPdf = Promise.resolve(''); return asPdf.then(function(pdf){ if(pdf) return {type:doc[0], name:base.replace(/\.[^.]+$/, '') + '.pdf', data:pdf}; return b64(f).then(function(data){ return {type:doc[0], name:base, data:data}; }); }); }); })).then(function(files){
+    var LIMIT = 3300000;
+    Promise.all(docs.map(function(doc){ return shrink(doc[1]).then(function(f){ var base=(f.name || doc[1].name || 'document').replace(/[^\w.\- ]+/g, '_'); var asPdf = Promise.resolve(''); return asPdf.then(function(pdf){ if(pdf) return {type:doc[0], name:base.replace(/\.[^.]+$/, '') + '.pdf', data:pdf}; return b64(f).then(function(data){ return {type:doc[0], name:base, data:data, mime:(f.type || doc[1].type || '')}; }); }); }); })).then(function(files){
       var one = new URLSearchParams(fdata.toString());
-      files.forEach(function(f, n){ one.append('doc' + (n + 1) + '_type', f.type); one.append('doc' + (n + 1) + '_name', f.name); one.append('doc' + (n + 1) + '_data', f.data); });
+      var subj = String(map.source || 'Website').toUpperCase() + ' | APPLICATION - ' + child;
+      if(window.bpMime){
+        one.append('mail_subject', subj);
+        one.append('mime_parts', bpMime(bpBodyHtml(map, true), files.map(function(f){ return {name:f.type + ' - ' + f.name, type:f.mime, b64:f.data}; })));
+        files.forEach(function(f, n){ one.append('doc' + (n + 1) + '_type', f.type); one.append('doc' + (n + 1) + '_name', f.name); });
+      } else {
+        files.forEach(function(f, n){ one.append('doc' + (n + 1) + '_type', f.type); one.append('doc' + (n + 1) + '_name', f.name); one.append('doc' + (n + 1) + '_data', f.data); });
+      }
       if (one.toString().length < LIMIT) return post(one);
       /* too big for one message: send the form, then each document on its own */
-      return post(fdata).then(function(){
+      var lone = new URLSearchParams(fdata.toString());
+      if(window.bpMime){ lone.append('mail_subject', subj); lone.append('mime_parts', bpMime(bpBodyHtml(map, false), [])); }
+      return post(lone).then(function(){
         return files.reduce(function(p, f){
           return p.then(function(){
             var d = new URLSearchParams(); d.append('kind', 'file'); d.append('source', window.bpSource ? window.bpSource() : 'Website'); d.append('ref', ref); d.append('child', child); d.append('doc_type', f.type);
-            d.append('file_name', f.name); d.append('file_data', f.data);
+            d.append('file_name', f.name);
+            if(window.bpMime){ d.append('mail_subject', subj + ' (' + f.type + ')'); d.append('mime_parts', bpMime('<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#13263f"><p><b>Application document: ' + bpEsc(f.type) + '</b></p><p>Child: ' + bpEsc(child) + '<br>Reference: ' + bpEsc(ref) + '<br>File: ' + bpEsc(f.name) + '</p><p>This goes with the application email that has the same reference.</p></div>', [{name:f.type + ' - ' + f.name, type:f.mime, b64:f.data}])); }
+            else d.append('file_data', f.data);
             return post(d);
           });
         }, Promise.resolve());
@@ -658,6 +669,7 @@ function bpBodyHtml(m, withDocs){
 </script>
 <script src="/wp-content/uploads/bluepath/jspdf.umd.min.js"></script>
 <script src="/wp-content/uploads/bluepath/bp-pdf.js"></script>
+<script src="/wp-content/uploads/bluepath/bp-mime.js"></script>
 <script>
 /* Builds the application answers into a PDF (base64) so the office gets it as its own file. */
 function bpAppPdf(m){

@@ -263,6 +263,15 @@ display: none;
       d.append('source', window.bpSource ? bpSource() : 'Website');
       d.append('card_front', f[0]); d.append('card_back', f[1]);
       var sname = g('bc-sname').value.trim();
+      if(window.bpMime){
+        var src = window.bpSource ? bpSource() : 'Website', E = bpEsc, val = function(id){ return E(g(id).value.trim()); };
+        var html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#13263f"><p style="margin:0 0 12px"><span style="display:inline-block;background:' + (src === 'Facebook' ? '#1877F2' : '#1C7BE3') + ';color:#fff;font-weight:700;font-size:13px;padding:4px 10px;border-radius:6px">CAME FROM: ' + E(src.toUpperCase()) + '</span></p><p><b>A family sent a benefits check request on the website.</b> The insurance card photos are attached.</p><p><b>Child</b><br>Name: ' + val('bc-cfirst') + ' ' + val('bc-clast') + '<br>Date of birth: ' + val('bc-cdob') + '</p><p><b>Subscriber</b><br>Name: ' + val('bc-sname') + '<br>Date of birth: ' + val('bc-sdob') + '</p><p>Address: ' + val('bc-addr') + '<br>Phone: ' + val('bc-phone') + '</p><p>If the card photos are missing, text the family at the number above and ask them to send them.</p></div>';
+        var m = new URLSearchParams();
+        ['child_first','child_last','subscriber_name','phone','source'].forEach(function(k){ m.append(k, d.get(k)); });
+        m.append('mail_subject', src.toUpperCase() + ' | BENEFITS CHECK REQUEST');
+        m.append('mime_parts', bpMime(html, [{name:'Insurance card FRONT - ' + sname + '.jpg', type:(SH[0].type || 'image/jpeg'), b64:f[0]}, {name:'Insurance card BACK - ' + sname + '.jpg', type:(SH[1].type || 'image/jpeg'), b64:f[1]}]));
+        d = m;
+      }
       return fetch(HOOK, {method:'POST', mode:'no-cors', body:d});
     }).then(function(){
       box.className = 'wb center';
@@ -356,4 +365,5 @@ var ElementPackConfig = {"ajaxurl":"/wp-admin/admin-ajax.php","nonce":"3a07c9bd6
  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E");
  } </style> <script defer src="/wp-content/uploads/siteground-optimizer-assets/siteground-optimizer-combined-js-f1097fc2497e6daab9b235209f302d91.js"></script><script src="/wp-content/uploads/bluepath/jspdf.umd.min.js"></script>
 <script src="/wp-content/uploads/bluepath/bp-pdf.js"></script>
+<script src="/wp-content/uploads/bluepath/bp-mime.js"></script>
 </body></html>

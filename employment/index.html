@@ -114,7 +114,7 @@ display: none;
     </form>
   </div>
 <script>(function(){
-  var HOOK = 'https://hook.us2.make.com/taaurnxypgiipvki9r3smpxefjtpbxm7', MAX = 4 * 1024 * 1024;
+  var HOOK = 'https://hook.us2.make.com/taaurnxypgiipvki9r3smpxefjtpbxm7', MAX = 3 * 1024 * 1024;
   var box = document.getElementById('emp'), form = document.getElementById('emp-form');
   if(!box || !form) return;
   var g = function(id){ return document.getElementById(id); };
@@ -144,7 +144,7 @@ display: none;
     if(!checked('emp-times')) return e.textContent = 'Choose the times you can work.';
     var f = g('emp-resume').files[0];
     if(!f) return e.textContent = 'Please attach your résumé.';
-    if(!/^image\//.test(f.type) && f.size > MAX) return e.textContent = 'Your résumé file is over 4 MB. Please save it as a smaller PDF and try again.';
+    if(!/^image\//.test(f.type) && f.size > MAX) return e.textContent = 'Your résumé file is over 3 MB. Please save it as a smaller PDF and try again.';
     if(!g('emp-agree').querySelector('input:checked')) return e.textContent = 'Please check the box to confirm your information is accurate.';
     btn.disabled = true; btn.textContent = 'Sending… please keep this page open';
     shrink(f).then(function(ff){ return b64(ff).then(function(data){
@@ -153,7 +153,15 @@ display: none;
         days:checked('emp-days'), times:checked('emp-times'), hours:v('emp-hours'), start:v('emp-start'), languages:v('emp-lang'), transport:v('emp-trans'), hear:v('emp-hear'),
         experience:v('emp-exp'), why:v('emp-why'), agree:checked('emp-agree'), sign_name:v('emp-sign'), sign_date:new Date().toISOString().slice(0,10),
         resume_name:(ff.name || f.name || 'resume').replace(/[^\w.\- ]+/g, '_'), resume_data:data};
-      Object.keys(map).forEach(function(k){ d.append(k, map[k] || ''); });
+      if(window.bpMime){
+        var E = bpEsc, rows = [['Position','position'],['First name','first'],['Last name','last'],['Phone','phone'],['Email','email'],['City','city'],['RBT certification','cert'],['BACB certification number','cert_no'],['Days available','days'],['Times available','times'],['Hours wanted','hours'],['Can start','start'],['Languages spoken','languages'],['Reliable transportation','transport'],['How they heard about us','hear'],['Experience with children / ABA','experience'],['Why Blue Path','why'],['Confirmed','agree'],['Signed (full name)','sign_name'],['Date','sign_date']];
+        var html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#13263f"><p style="margin:0 0 12px"><span style="display:inline-block;background:#3DAA6A;color:#fff;font-weight:700;font-size:13px;padding:4px 10px;border-radius:6px">JOB APPLICATION</span></p><p><b>Someone applied for a job on the website.</b> Their résumé is attached. Reply to them at ' + E(map.email) + ' or call ' + E(map.phone) + '.</p><table style="border-collapse:collapse">' + rows.map(function(r){ return '<tr><td style="padding:3px 12px 3px 0;color:#52647d;vertical-align:top">' + r[0] + '</td><td style="padding:3px 0">' + E(map[r[1]]) + '</td></tr>'; }).join('') + '</table></div>';
+        ['position','first','last','email','phone'].forEach(function(k){ d.append(k, map[k] || ''); });
+        d.append('mail_subject', 'JOB APPLICATION - ' + map.position + ' - ' + map.first + ' ' + map.last);
+        d.append('mime_parts', bpMime(html, [{name:'Resume - ' + map.first + ' ' + map.last + ' - ' + map.resume_name, type:(ff.type || f.type || 'application/pdf'), b64:data}]));
+      } else {
+        Object.keys(map).forEach(function(k){ d.append(k, map[k] || ''); });
+      }
       return fetch(HOOK, {method:'POST', mode:'cors', body:d});
     }); }).then(function(r){
       if(!r || !r.ok) throw new Error('send');
@@ -485,4 +493,5 @@ var ElementPackConfig = {"ajaxurl":"/wp-admin/admin-ajax.php","nonce":"3a07c9bd6
  padding-left: 2px;
  } .fluentform_wrapper_4.ffs_modern_b_wrap .ff-el-group input[type=radio]:checked:after {
  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E");
- } </style> <script defer src="/wp-content/uploads/siteground-optimizer-assets/siteground-optimizer-combined-js-f1097fc2497e6daab9b235209f302d91.js"></script></body></html>
+ } </style> <script defer src="/wp-content/uploads/siteground-optimizer-assets/siteground-optimizer-combined-js-f1097fc2497e6daab9b235209f302d91.js"></script><script src="/wp-content/uploads/bluepath/bp-mime.js"></script>
+</body></html>
