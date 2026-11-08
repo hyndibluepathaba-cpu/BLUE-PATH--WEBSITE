@@ -117,6 +117,8 @@ body:has(#start:not([hidden])) .caption { bottom: calc(130px + env(safe-area-ins
 .pick-row button.off { opacity: .45; }
 .pick-row button small { font: 700 .8rem var(--body); color: var(--muted); }
 .pick-row svg { width: 100%; height: auto; overflow: visible; }
+.pick-row .pickface { display: block; width: 100%; aspect-ratio: 400 / 318; border-radius: 22px; overflow: hidden; }
+.pick-row .pickface svg { width: 100%; height: 100%; display: block; }
 /* picture cards: the buddy "holds up" a picture (tact) or offers 2-4 to tap (listener, mand) */
 .piccard { position: fixed; right: clamp(12px, 4vw, 48px); top: 50%; transform: translateY(-50%) rotate(3deg); z-index: 3; background: #fff; border-radius: 28px; padding: clamp(12px, 2vw, 22px); box-shadow: 0 10px 0 rgba(22,50,92,.15); text-align: center; width: clamp(150px, 30vmin, 320px); }
 .piccard .pic { font-size: clamp(90px, 22vmin, 230px); line-height: 1.1; }
@@ -1089,6 +1091,14 @@ function eyeStyles(e,sd,G=GEO.blue){
 
   const HEADKEY = { blue: 'blue', robo: 'dot', ollie: 'ollie' };
   const HEADBG = { blue: '#2572DA', dot: '#E6ECF2', ollie: '#7255CC' };
+  // picker cards show each buddy's current face (the same face as Big Head), not the old drawing
+  $('pickRow').querySelectorAll('button').forEach(btn => {
+    const w = HEADKEY[btn.dataset.buddy]; if (!w) return;
+    const old = btn.querySelector('svg'); if (!old) return;
+    const holder = document.createElement('span'); holder.className = 'pickface'; holder.style.background = HEADBG[w];
+    holder.innerHTML = `<svg viewBox="0 -18 400 318" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${FACE[w]()}</svg>`;
+    old.replaceWith(holder);
+  });
   let hWho = null, hFeel = 'calm', hBf = null, blinkT = null;
   function headOn() { return document.body.classList.contains('robot') && !!HEADKEY[buddy]; }
   function drawRobotFace() {
