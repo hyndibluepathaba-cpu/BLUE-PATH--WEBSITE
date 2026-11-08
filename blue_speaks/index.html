@@ -108,6 +108,7 @@ body:has(#start:not([hidden])) .caption { bottom: calc(130px + env(safe-area-ins
 .blue[data-char="robo"] .b-bow, .blue[data-char="robo"] .b-tuft, .blue[data-char="robo"] .b-lash { visibility: hidden; }
 @media (prefers-reduced-motion:no-preference){ .blue[data-char="robo"] .r-light { animation: rBlink 1.6s ease-in-out infinite; } }
 @keyframes rBlink { 50% { fill: #FFD34D; } }
+@media (prefers-reduced-motion:no-preference){ #robotFace .r-light { animation: rBlink 1.6s ease-in-out infinite; } }
 /* kid-facing picker: big pictures, one tap */
 .picker { position: fixed; inset: 0; z-index: 8; display: grid; place-content: center; gap: 24px; padding: 24px 16px; background: linear-gradient(#dcefff, #b5d8f7); text-align: center; }
 .picker h2 { margin: 0; font: 700 clamp(1.8rem, 5vw, 3rem) var(--display); color: var(--ink); }
@@ -1004,40 +1005,51 @@ function blueFace(feel="calm"){
   </g></g>`;
 }
 
-/* Dot: a robot face plate with bolts, dark visor eyes with big purple pupils, gray shutter eyelids, pink cheeks and a smile that opens to talk */
+/* Dot: her real look on a big screen: silver-blue plate, navy screen eyes with cyan pupils, antenna light, bolts, screen mouth */
 function dotFace(feel="calm"){
   const id="df"+(faceN++), f=FEEL[feel], G=GEO.dot;
+  // matches the real Dot: silver-blue face plate, dark navy screen eyes with glowing cyan pupils,
+  // metal shutter eyelids, blinking pink antenna light, bolts, and a dark screen mouth
   const eye=k=>{
     const sd=k==="l"?-1:1, st=eyeStyles(eyeOf(f,k),sd,G), cx=k==="l"?128:272;
-    return `<g class="beye ${k}" transform="translate(${cx} 116)">
-      <clipPath id="${id}${k}"><rect x="${-G.rx}" y="${-G.ry}" width="${2*G.rx}" height="${2*G.ry}" rx="30"/></clipPath>
-      <radialGradient id="${id}i${k}" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#B98BF2"/><stop offset=".6" stop-color="#6A3CB8"/><stop offset="1" stop-color="#3A1A73"/></radialGradient>
-      <rect x="${-G.rx-8}" y="${-G.ry-8}" width="${2*G.rx+16}" height="${2*G.ry+16}" rx="36" fill="#AEB9C5"/>
-      <rect x="${-G.rx}" y="${-G.ry}" width="${2*G.rx}" height="${2*G.ry}" rx="30" fill="#161B26"/>
+    return `<g class="beye ${k}" transform="translate(${cx} 112)">
+      <clipPath id="${id}${k}"><rect x="${-G.rx}" y="${-G.ry}" width="${2*G.rx}" height="${2*G.ry}" rx="26"/></clipPath>
+      <radialGradient id="${id}i${k}" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#B8F3FF"/><stop offset=".45" stop-color="#3FD0FF"/><stop offset="1" stop-color="#0090C8"/></radialGradient>
+      <linearGradient id="${id}s${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E5677"/><stop offset="1" stop-color="#1A3249"/></linearGradient>
+      <rect x="${-G.rx-9}" y="${-G.ry-9}" width="${2*G.rx+18}" height="${2*G.ry+18}" rx="33" fill="#8FAAB8" stroke="#6D8B9B" stroke-width="3"/>
+      <rect x="${-G.rx}" y="${-G.ry}" width="${2*G.rx}" height="${2*G.ry}" rx="26" fill="url(#${id}s${k})"/>
       <g clip-path="url(#${id}${k})">
         <g class="pup" style="transform:${st.pup}">
-          <circle r="38" fill="url(#${id}i${k})"/>
-          <circle r="17" fill="#140A26"/>
-          <circle cx="12" cy="-14" r="11" fill="#fff"/><circle cx="-12" cy="12" r="5" fill="#fff" opacity=".9"/>
+          <circle r="34" fill="#0B3A55" opacity=".55"/>
+          <circle r="28" fill="url(#${id}i${k})"/>
+          <circle r="11" fill="#0B4A6E"/>
+          <circle cx="10" cy="-11" r="8" fill="#fff"/><circle cx="-9" cy="9" r="3.5" fill="#fff" opacity=".85"/>
         </g>
-        <g class="lo" style="transform:${st.lo}"><path d="M-90 200V0Q0-30 90 0V200Z" fill="#D3DBE3"/><path d="M-90 0Q0-30 90 0" fill="none" stroke="#8D9AA8" stroke-width="4"/></g>
-        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 10 90 0V-200Z" fill="#D3DBE3"/><path d="M-90 0Q0 10 90 0" fill="none" stroke="#7D8A98" stroke-width="6" stroke-linecap="round"/></g>
+        <path d="M${-G.rx+10} ${-G.ry+14}Q0 ${-G.ry} ${G.rx-10} ${-G.ry+14}" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".18"/>
+        <g class="lo" style="transform:${st.lo}"><path d="M-90 200V0Q0-24 90 0V200Z" fill="#A9C2CF"/><path d="M-90 0Q0-24 90 0" fill="none" stroke="#6D8B9B" stroke-width="4"/></g>
+        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 8 90 0V-200Z" fill="#A9C2CF"/><path d="M-90 0Q0 8 90 0" fill="none" stroke="#5F7D8D" stroke-width="6" stroke-linecap="round"/></g>
       </g>
       <g class="lash" style="transform:${st.lash}"></g>
-      <path class="brow" style="transform:${st.brow}" d="M-30-90Q0-98 30-90" fill="none" stroke="#7D8A98" stroke-width="10" stroke-linecap="round"/>
+      <path class="brow" style="transform:${st.brow}" d="M-34-92h68" fill="none" stroke="#6D8B9B" stroke-width="10" stroke-linecap="round"/>
       ${tearPath(sd)}
     </g>`;
   };
-  const bolt=(x,y)=>`<circle cx="${x}" cy="${y}" r="8" fill="#C3CDD7" stroke="#8D9AA8" stroke-width="2.5"/><path d="M${x-4} ${y}h8" stroke="#8D9AA8" stroke-width="2.5" stroke-linecap="round"/>`;
-  return `<rect x="-3000" y="-3000" width="6400" height="6400" fill="#E6ECF2"/>
+  const bolt=(x,y)=>`<circle cx="${x}" cy="${y}" r="9" fill="#D5E4EC" stroke="#7F9DAD" stroke-width="2.5"/><path d="M${x-4.5} ${y}h9" stroke="#7F9DAD" stroke-width="2.5" stroke-linecap="round"/>`;
+  return `<linearGradient id="${id}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6E7EF"/><stop offset="1" stop-color="#AFC8D5"/></linearGradient>
+  <rect x="-3000" y="-3000" width="6400" height="6400" fill="url(#${id}bg) #C2D9E3"/>
   <g class="bf" data-buddy="dot"><g class="whole">
-    ${bolt(22,-2)}${bolt(378,-2)}${bolt(22,282)}${bolt(378,282)}
+    <path d="M200 46V24" stroke="#7F9DAD" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="200" cy="48" rx="16" ry="6" fill="#9FBCCB" stroke="#7F9DAD" stroke-width="2.5"/>
+    <circle class="r-light" cx="200" cy="14" r="13" fill="#FF5C7A" stroke="#C94A64" stroke-width="2"/><circle cx="195" cy="9" r="4" fill="#fff" opacity=".75"/>
+    ${bolt(26,6)}${bolt(374,6)}${bolt(26,286)}${bolt(374,286)}
     ${extras}
-    <ellipse class="ck" cx="56" cy="204" rx="30" ry="19" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
-    <ellipse class="ck" cx="344" cy="204" rx="30" ry="19" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
+    <ellipse class="ck" cx="52" cy="200" rx="24" ry="14" fill="${f.ck[0]}" opacity="${f.ck[1]*.7}"/>
+    <ellipse class="ck" cx="348" cy="200" rx="24" ry="14" fill="${f.ck[0]}" opacity="${f.ck[1]*.7}"/>
     ${eye("l")}${eye("r")}
-    <g class="mo" style="transform-origin:200px 206px;transform:scaleY(${.03+.97*f.beak})"><path d="M156 206C160 262 240 262 244 206Z" fill="#3A0E22"/><ellipse cx="200" cy="246" rx="24" ry="10" fill="#F2668B"/></g>
-    <path class="smile" d="${smilePath(f.smile)}" fill="none" stroke="#161B26" stroke-width="8" stroke-linecap="round"/>
+    <rect x="150" y="196" width="100" height="22" rx="11" fill="#24435E" opacity=".25"/>
+    <g class="mo" style="transform-origin:200px 207px;transform:scaleY(${.18+.82*f.beak})"><rect x="158" y="190" width="84" height="40" rx="16" fill="#1A3249"/><rect x="172" y="216" width="56" height="9" rx="4.5" fill="#3FD0FF" opacity=".55"/></g>
+    <path class="smile" d="${smilePath(f.smile)}" fill="none" stroke="#24435E" stroke-width="8" stroke-linecap="round"/>
+    <g transform="translate(200 268)"><rect x="-38" y="-13" width="76" height="26" rx="9" fill="#9FBCCB" stroke="#7F9DAD" stroke-width="2.5"/><circle cx="-20" r="5.5" fill="#3DD68C"/><circle cx="0" r="5.5" fill="#FFD34D"/><circle cx="20" r="5.5" fill="#FF7FA3"/></g>
   </g></g>`;
 }
 
@@ -1133,7 +1145,7 @@ function eyeStyles(e,sd,G=GEO.blue){
 }
 
   const HEADKEY = { blue: 'blue', robo: 'dot', ollie: 'ollie' };
-  const HEADBG = { blue: '#2572DA', dot: '#E6ECF2', ollie: '#7255CC' };
+  const HEADBG = { blue: '#2572DA', dot: '#C2D9E3', ollie: '#7255CC' };
   // picker cards show each buddy's current face (the same face as Big Head), not the old drawing
   $('pickRow').querySelectorAll('button').forEach(btn => {
     const w = HEADKEY[btn.dataset.buddy]; if (!w) return;
