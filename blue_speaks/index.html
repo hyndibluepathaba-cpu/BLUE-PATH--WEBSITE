@@ -1300,7 +1300,7 @@ function eyeStyles(e,sd,G=GEO.blue){
           child_name: kidKey($('childName').value) || 'friend',
           fun_facts: factsFor(sessionKid).join('; ') || 'nothing yet',
           staff_name: $('staffName').value.trim() || 'your teacher',
-          mode: MODES[mode],
+          mode: MODES[mode] + (document.body.classList.contains('robot') ? ' (BIG HEAD: you are only a big face on a screen, with no body, wings or arms that move)' : ''),
           mode_greeting: greetingFor(mode, kidKey($('childName').value))
         },
         clientTools: {
