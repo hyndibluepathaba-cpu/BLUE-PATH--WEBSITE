@@ -495,6 +495,23 @@ body.robot.bighead #blueSvg{visibility:hidden}
 .bf .whole.spin{transform-origin:200px 140px;animation:spin360 1.5s cubic-bezier(.5,0,.3,1)}
 @keyframes spin360{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.bf .whole,.bf .drop,.bf .zzz text{animation:none!important}.f-sleepy .bf .zzz text{opacity:1}.f-sad .bf .drop{opacity:1}}
+
+.bookbtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; z-index: 6; border: 0; border-radius: 999px; padding: 12px 18px; font: 800 1.1rem/1 system-ui, sans-serif; background: #6B4FA8; color: #fff; box-shadow: 0 6px 0 rgba(0,0,0,.18); }
+.bookwrap { position: fixed; inset: 0; z-index: 20; background: rgba(20,28,60,.25); display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
+.bookwrap[hidden] { display: none; }
+.bookcard { background: #FFFDF6; border-radius: 28px; width: min(920px, 100%); max-height: 62vh; overflow: auto; padding: clamp(14px, 3vw, 30px); box-shadow: 0 12px 0 rgba(0,0,0,.18); text-align: center; }
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 12px 0; }
+.shelf button { border: 0; border-radius: 18px; padding: 14px 8px; background: #EFE9FB; font: 800 1rem/1.25 system-ui, sans-serif; color: #2b2350; }
+.shelf button b { display: block; font-size: 3rem; line-height: 1.2; }
+.shelf h3 { grid-column: 1 / -1; margin: 6px 0 0; text-align: left; color: #6B4FA8; font: 800 1rem system-ui, sans-serif; }
+.bookpic { font-size: clamp(3.5rem, 14vmin, 8rem); line-height: 1.15; margin: 4px 0 8px; }
+.booktext { font: 800 clamp(1.5rem, 4.6vmin, 2.8rem)/1.35 system-ui, sans-serif; color: #1d2340; margin: 0 0 14px; }
+.booktext span { border-radius: 8px; padding: 0 2px; transition: background .15s; }
+.booktext span.on { background: #FFE27A; }
+.booknav { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.booknav button { border: 0; border-radius: 999px; padding: 12px 22px; font: 800 1.2rem/1 system-ui, sans-serif; background: #6B4FA8; color: #fff; }
+.booknav button.light { background: #EFE9FB; color: #2b2350; }
+.booknav small { font: 700 1rem system-ui, sans-serif; color: #667; }
 </style>
 </head>
 <body>
@@ -620,6 +637,17 @@ body.robot.bighead #blueSvg{visibility:hidden}
 </div>
 <div class="piccard" id="picCard" hidden><div class="pic" id="picEmoji"></div><div class="word" id="picWord"></div></div>
 <div class="choices" id="choices" hidden></div>
+<button type="button" class="bookbtn" id="bookBtn" hidden>📚 Books</button>
+<div class="bookwrap" id="shelfWrap" hidden><div class="bookcard">
+  <h1 style="margin:0">📚 Ollie's Bookshelf</h1>
+  <div class="shelf" id="shelf"></div>
+  <div class="booknav"><button type="button" class="light" id="shelfClose">✕ Close</button></div>
+</div></div>
+<div class="bookwrap" id="bookWrap" hidden><div class="bookcard">
+  <div class="bookpic" id="bookPic"></div>
+  <p class="booktext" id="bookText"></p>
+  <div class="booknav"><button type="button" class="light" id="bookBack">◀</button><small id="bookNum"></small><button type="button" id="bookNext">▶</button><button type="button" class="light" id="bookClose">✕</button></div>
+</div></div>
 <div class="songshelf" id="songShelf" hidden>
   <div class="songstyle" id="songStyle"><button type="button" data-style="together" class="on">🎤 Sing together</button><button type="button" data-style="fill">✋ Fill in the word</button></div>
   <div class="songrow" id="songRow"></div>
@@ -694,6 +722,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
         <button type="button" data-mode="question">Question Time</button>
         <button type="button" data-mode="sing">Sing Together</button>
         <button type="button" data-mode="library">Library (Ollie)</button>
+        <button type="button" data-mode="story">Story Time (Ollie)</button>
         <button type="button" data-mode="playground">Playground (Blue)</button>
         <button type="button" data-mode="village">Village Welcome (Dot)</button>
       </div>
@@ -734,7 +763,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const MODES = { buddy: 'Buddy', circle: 'Circle Time', social: 'Social Time', question: 'Question Time', sing: 'Sing Together', library: 'Library', playground: 'Playground', village: 'Village Welcome' };
+  const MODES = { buddy: 'Buddy', circle: 'Circle Time', social: 'Social Time', question: 'Question Time', sing: 'Sing Together', library: 'Library', story: 'Story Time', playground: 'Playground', village: 'Village Welcome' };
   const store = { get: k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
                   set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 
@@ -813,7 +842,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
   let picT = null;
   function autoClear(ms) { clearTimeout(picT); picT = setTimeout(() => clearPictures(), ms); }
   function clearPictures() { clearTimeout(picT); $('picCard').hidden = true; $('choices').hidden = true; $('choices').innerHTML = ''; }
-  const MODE_ICON = { buddy: '💙', circle: '🎵', social: '👋', question: '🧠', sing: '🎤', library: '📚', playground: '🛝', village: '🏘️' };
+  const MODE_ICON = { buddy: '💙', circle: '🎵', social: '👋', question: '🧠', sing: '🎤', library: '📚', story: '📖', playground: '🛝', village: '🏘️' };
   // the buddy's opening line for each mode (sent by the app after 5 quiet seconds; ElevenLabs First message stays empty)
   function greetingFor(m, name) {
     const n = name || 'friend';
@@ -823,6 +852,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
     if (m === 'question') return `${b.hello} It's Question Time! I'm ${b.name}. I'll ask, and you answer. You can say it, point, sign, or use your talker. Ready?`;
     if (m === 'social') return `Hi ${n}! I'm ${b.name}. It's Social Time! Let's practice saying hi. Can you wave hello to me?`;
     if (m === 'library') return `${b.hello} Welcome to the library! I'm ${b.name}. Should we find a book, or play a story game?`;
+    if (m === 'story') return `${b.hello} It's Story Time, friends! I'm ${b.name}. Let's pick a book and read it together!`;
     if (m === 'playground') return `${b.hello} Playground time, friends! I'm ${b.name}. Ready to move? Let's play a game!`;
     if (m === 'village') return `${b.hello} Welcome to Blue Path Village! I'm ${b.name}. Want to see where we can go today?`;
     return `Hi ${n}! I'm ${b.name}! ${b.hello} Do you want to chat, play a game, or sing a song?`;
@@ -1326,6 +1356,10 @@ function eyeStyles(e,sd,G=GEO.blue){
           show_picture: ({ item, show_word } = {}) => { if (recap) recap.pics = String(item || ''); const ok = showPicture(item, show_word); return ok ? `A picture of ${item} is showing.` : `No picture for ${item}; the word is showing instead.`; },
           // 2-4 big pictures the child can tap: "Touch the dog" (listener) or "What do you want?" (mand)
           show_choices: ({ items } = {}) => { const list = String(items || '').split(',').map(x => x.trim()).filter(Boolean); showChoices(list); if (recap) recap.pics = list.join(', '); return `Showing ${list.join(', ')}. The child's tap arrives as a message.`; },
+          // read-along books (Ollie): the page shows big on screen and the buddy reads it out loud
+          show_bookshelf: () => { BOOK.shelf(); return 'The bookshelf is showing. Books: ' + BOOK.titles() + '. Ask which one, or the child can tap a cover.'; },
+          open_book: ({ title } = {}) => BOOK.openByTitle(title),
+          book_page: ({ action } = {}) => BOOK.page(action),
           clear_pictures: () => { clearPictures(); if (recap) recap.pics = ''; return 'Pictures cleared.'; },
           // the buddy calls this when a child shares something fun (food, toys, pets, shows, games, colors...)
           save_fun_fact: ({ fact } = {}) => {
@@ -1340,7 +1374,7 @@ function eyeStyles(e,sd,G=GEO.blue){
           }
         },
         onConnect: () => { if (my !== talkId || !recap) return; convoMode = mode; setState('listening', 'Listening'); renderShelf(); startGuard(back ? recap.startedAt : 0); recap.startedAt = startedAt; recap.droppedAt = 0; connectedAt = Date.now(); if (back && recap.lines.length) pickUp(); else waitForChild(); ensureAudio(); },
-        onModeChange: ({ mode: m }) => { markActive(); songMode(m); if (m === 'speaking') greeted = true; if (!paused && !alerting) setState(m, m === 'speaking' ? `${bname()} is talking` : 'Listening'); },
+        onModeChange: ({ mode: m }) => { markActive(); BOOK.speaking(m === 'speaking'); songMode(m); if (m === 'speaking') greeted = true; if (!paused && !alerting) setState(m, m === 'speaking' ? `${bname()} is talking` : 'Listening'); },
         onMessage: ({ message, role, source }) => { markActive(); if ((role || source) === 'user') { greeted = true; checkWords(message); songHeard(message, true); remember('Child', message); } if ((role || source) === 'agent' || source === 'ai') { checkBuddy(message); if (alerting) return; if (!song) say(message); songHeard(message, false); remember(bname(), message); const m = moveFor(message); if (m) doMove(m); } },
         onDisconnect: () => { if (my !== talkId) return; if (endingOnPurpose) endedCleanly(); else dropped(); },
         onError: (msg) => { console.warn(msg); }   // a real drop also fires onDisconnect, which brings the buddy back
@@ -1779,6 +1813,80 @@ function eyeStyles(e,sd,G=GEO.blue){
 
   // keep the screen awake during sessions where supported
   if ('wakeLock' in navigator) document.addEventListener('click', () => navigator.wakeLock.request('screen').catch(() => {}), { once: true });
+  const BOOKS = [{"id": "pigs", "title": "The Three Little Pigs", "cover": "🐷", "kind": "classic", "pages": [["Once upon a time, there were three little pigs.", "🐷🐷🐷"], ["The first pig built a house of straw.", "🌾🏠"], ["The second pig built a house of sticks.", "🪵🏠"], ["The third pig built a house of bricks.", "🧱🏠"], ["Along came the wolf. \"Little pig, little pig, let me come in!\"", "🐺🚪"], ["\"Not by the hair of my chinny chin chin!\"", "🐷🙅"], ["\"Then I'll huff, and I'll puff, and I'll blow your house in!\"", "🐺💨"], ["He blew down the straw house and the stick house. The pigs ran to the brick house.", "💨🏃🐷🐷"], ["He huffed and puffed, but the brick house stayed up! The three pigs were safe.", "🧱🏠💪"], ["The end!", "🐷🐷🐷🎉"]]}, {"id": "hen", "title": "The Little Red Hen", "cover": "🐔", "kind": "classic", "pages": [["The little red hen found some wheat.", "🐔🌾"], ["\"Who will help me plant it?\" \"Not I,\" said the cat, the dog and the duck.", "🐱🐶🦆"], ["\"Then I will do it myself,\" said the little red hen. And she did.", "🐔💪"], ["\"Who will help me cut it?\" \"Not I,\" they all said.", "🌾✂️"], ["\"Who will help me bake the bread?\" \"Not I,\" they all said.", "🍞🔥"], ["\"Who will help me eat the bread?\" \"I will!\" they all said.", "🍞😋"], ["\"No,\" said the hen. \"I will eat it with my chicks.\" Next time, they all helped!", "🐔🐥🐥🤝"], ["The end!", "🍞🎉"]]}, {"id": "gingerbread", "title": "The Gingerbread Man", "cover": "🍪", "kind": "classic", "pages": [["A little old woman baked a gingerbread man.", "👵🍪"], ["She opened the oven, and he jumped out and ran away!", "🍪🏃"], ["\"Run, run, as fast as you can! You can't catch me, I'm the gingerbread man!\"", "🍪💨"], ["He ran past the cow. He ran past the horse.", "🐮🐴"], ["He came to a river. A fox said, \"Hop on my back. I'll carry you across.\"", "🦊🌊"], ["Snip, snap! The fox ate the gingerbread man.", "🦊😮"], ["The end!", "🍪🎉"]]}, {"id": "goldilocks", "title": "Goldilocks and the Three Bears", "cover": "🐻", "kind": "classic", "pages": [["Three bears lived in a house in the woods.", "🐻🐻🐻🏠"], ["A girl named Goldilocks went inside.", "👧🚪"], ["She tasted three bowls of porridge. Too hot! Too cold! Just right!", "🥣🥣🥣"], ["She sat in three chairs. Too big! Too big! Just right... and it broke!", "🪑💥"], ["She tried three beds. Too hard! Too soft! Just right. She fell asleep.", "🛏️😴"], ["The bears came home. \"Someone is sleeping in my bed!\" said Baby Bear.", "🐻😮"], ["Goldilocks woke up, said sorry, and ran home.", "👧🏃🏠"], ["The end!", "🐻🐻🐻🎉"]]}, {"id": "tortoise", "title": "The Tortoise and the Hare", "cover": "🐢", "kind": "classic", "pages": [["The hare was very fast. The tortoise was very slow.", "🐇🐢"], ["\"Let's have a race!\" said the tortoise.", "🏁"], ["Ready, set, go! The hare zoomed ahead.", "🐇💨"], ["The hare was so far ahead, he took a nap.", "🐇😴"], ["The tortoise kept going. Slow and steady. Step, step, step.", "🐢👣"], ["The tortoise crossed the finish line! He won!", "🐢🏆"], ["Slow and steady wins the race. The end!", "🐢🎉"]]}, {"id": "rhymes", "title": "Nursery Rhymes", "cover": "⭐", "kind": "classic", "pages": [["Twinkle, twinkle, little star, how I wonder what you are.", "⭐"], ["Up above the world so high, like a diamond in the sky.", "💎🌌"], ["Humpty Dumpty sat on a wall. Humpty Dumpty had a great fall.", "🥚🧱"], ["Hey diddle diddle, the cat and the fiddle, the cow jumped over the moon.", "🐱🎻🐮🌙"], ["The little dog laughed to see such fun, and the dish ran away with the spoon.", "🐶😂🍽️🥄"], ["Jack and Jill went up the hill to fetch a pail of water.", "👦👧⛰️🪣"], ["The itsy bitsy spider climbed up the water spout.", "🕷️🌧️"], ["Out came the sun and dried up all the rain, and the itsy bitsy spider climbed up the spout again.", "☀️🕷️"], ["The end!", "⭐🎉"]]}, {"id": "ollie-star", "title": "Ollie Finds a Star", "cover": "🦉", "kind": "ollie", "pages": [["Ollie the owl loves the night sky.", "🦉🌙"], ["One night, he saw a tiny star all by itself.", "⭐"], ["\"Hello, little star! Are you lonely?\" asked Ollie.", "🦉⭐"], ["Ollie looked and looked. He found more stars!", "🔭✨"], ["\"Look, little star! You have friends!\"", "⭐✨⭐"], ["The little star twinkled. Ollie flapped his happy wings.", "⭐🦉💜"], ["The end!", "🌙🎉"]]}, {"id": "dot-wait", "title": "Dot Waits Her Turn", "cover": "🤖", "kind": "ollie", "pages": [["Dot the robot wanted to go down the slide.", "🤖🛝"], ["But Blue was already in line.", "🐦🧍"], ["Dot's antenna blinked. Beep! \"I want to go now!\"", "🤖❗"], ["Dot took a big robot breath. In... and out.", "🤖🌬️"], ["\"First Blue, then me,\" said Dot. She waited.", "🐦➡️🤖"], ["Then it was Dot's turn! Wheee!", "🤖🛝🎉"], ["\"Waiting was hard, but I did it!\" said Dot. The end!", "🤖💪"]]}, {"id": "blue-library", "title": "Blue Goes to the Library", "cover": "🐦", "kind": "ollie", "pages": [["Blue flew into the library.", "🐦📚"], ["\"Shh,\" said Ollie. \"In the library, we use a quiet voice.\"", "🦉🤫"], ["Blue whispered, \"Hi, Ollie. Can you help me find a book?\"", "🐦💬"], ["\"What do you like?\" asked Ollie. \"Birds!\" said Blue.", "🦉❓🐦"], ["Ollie found a book all about birds.", "📕🐦"], ["Blue said, \"Thank you!\" and read it in her cozy nest. The end!", "🐦🪹📖"]]}, {"id": "village", "title": "Welcome to Blue Path Village", "cover": "🏘️", "kind": "ollie", "pages": [["Welcome to Blue Path Village!", "🏘️"], ["Dot says hi at the gate. Beep boop!", "🤖👋"], ["At the Bank of Blue, you get Blue Bucks.", "🏦💵"], ["At Dot's Market, you can shop for food.", "🛒🍎"], ["At the library, Ollie helps you find a book.", "🦉📚"], ["At the playground, Blue plays games with you!", "🐦🛝"], ["Follow the path, and have fun. The end!", "👣💙"]]}];
+
+  // ---- Ollie's read-along books. Classics are old public-domain tales/rhymes; the rest are Blue Path originals.
+  const BOOK = (() => {
+    let cur = null, pg = 0, hl = null;
+    const pageText = () => cur.pages[pg][0];
+    const tell = t => { if (convo) { try { convo.sendUserMessage(t); } catch (e) {} } };
+    function draw() {
+      const [t, e] = cur.pages[pg];
+      $('bookPic').textContent = e;
+      $('bookText').innerHTML = '';
+      t.split(/\s+/).forEach((w, i) => { const sp = document.createElement('span'); sp.textContent = w + ' '; $('bookText').append(sp); });
+      $('bookNum').textContent = `${pg + 1} / ${cur.pages.length}`;
+      $('bookBack').disabled = pg === 0;
+      $('bookNext').textContent = pg === cur.pages.length - 1 ? '✓ Done' : '▶';
+      stopHL();
+      markActive && markActive();
+    }
+    function stopHL() { clearInterval(hl); hl = null; $('bookText').querySelectorAll('span').forEach(x => x.classList.remove('on')); }
+    function speaking(on) {
+      if (!cur || $('bookWrap').hidden) return;
+      if (!on) { stopHL(); return; }
+      const w = [...$('bookText').querySelectorAll('span')]; let i = 0; stopHL();
+      hl = setInterval(() => { w.forEach(x => x.classList.remove('on')); if (i >= w.length) { clearInterval(hl); hl = null; return; } w[i++].classList.add('on'); }, 380);
+    }
+    const say = () => `"${cur.title}", page ${pg + 1} of ${cur.pages.length}. It says: "${pageText()}"`;
+    function open(b) { cur = b; pg = 0; $('shelfWrap').hidden = true; $('bookWrap').hidden = false; clearPictures(); draw(); }
+    function close() { $('bookWrap').hidden = true; $('shelfWrap').hidden = true; stopHL(); cur = null; }
+    function find(t) {
+      const q = String(t || '').toLowerCase().replace(/[^a-z ]/g, '');
+      return BOOKS.find(b => b.title.toLowerCase().replace(/[^a-z ]/g, '') === q) ||
+             BOOKS.find(b => { const k = b.title.toLowerCase(); return q && q.split(' ').filter(x => x.length > 3 && !['little','three','with','goes','finds'].includes(x)).some(x => k.includes(x)); });
+    }
+    function shelf() {
+      const box = $('shelf'); box.innerHTML = '';
+      [['classic', 'Classic stories and rhymes'], ['ollie', "Ollie's own books"]].forEach(([k, h]) => {
+        const hd = document.createElement('h3'); hd.textContent = h; box.append(hd);
+        BOOKS.filter(b => b.kind === k).forEach(b => {
+          const btn = document.createElement('button'); btn.type = 'button';
+          btn.innerHTML = '<b></b>'; btn.querySelector('b').textContent = b.cover; btn.append(b.title);
+          btn.onclick = () => { open(b); tell(`(The child picked the book "${b.title}" on the screen. The page is showing.) ${say()}. Read this page out loud now, word for word, slowly and clearly. Then pause. When you're ready for the next page, call book_page with next.`); };
+          box.append(btn);
+        });
+      });
+      $('bookWrap').hidden = true; $('shelfWrap').hidden = false; clearPictures();
+    }
+    function openByTitle(t) {
+      const b = find(t);
+      if (!b) { shelf(); return `There's no book called "${t}" on the shelf. The bookshelf is showing instead. Books: ${titles()}.`; }
+      open(b); return `${say()}. Read this page out loud now, word for word, slowly and clearly, then pause a moment for the kids. Call book_page with next for the next page.`;
+    }
+    function page(a) {
+      if (!cur) return 'No book is open. Call show_bookshelf or open_book first.';
+      a = String(a || 'next').toLowerCase();
+      if (a === 'close') { close(); return 'The book is closed.'; }
+      if (a === 'back') { if (pg > 0) pg--; draw(); return `${say()}. Read it out loud, word for word.`; }
+      if (pg >= cur.pages.length - 1) { const t = cur.title; close(); return `That was the last page of "${t}". The book is closed. Cheer the readers, ask one fun question about the story, then go back to the library activities.`; }
+      pg++; draw(); return `${say()}. Read it out loud, word for word, slowly. If it's a page kids know, pause before the last word so they can say it.`;
+    }
+    const titles = () => BOOKS.map(b => b.title).join(', ');
+    $('bookBtn').onclick = () => { shelf(); tell('(Staff opened the bookshelf on the screen.) Ask the kids which book they want to read. They can tap a cover.'); };
+    $('shelfClose').onclick = () => { $('shelfWrap').hidden = true; };
+    $('bookClose').onclick = () => { close(); tell('(Staff closed the book.) Go back to what you were doing.'); };
+    $('bookBack').onclick = () => { if (!cur || pg === 0) return; pg--; draw(); tell(`(Staff went back a page.) ${say()}. Read it out loud, word for word.`); };
+    $('bookNext').onclick = () => {
+      if (!cur) return;
+      if (pg >= cur.pages.length - 1) { const t = cur.title; close(); tell(`(Staff finished the book "${t}".) Cheer the readers and ask one fun question about the story.`); return; }
+      pg++; draw(); tell(`(Staff turned the page.) ${say()}. Read it out loud, word for word, slowly.`);
+    };
+    // the Books button shows whenever Ollie is the buddy
+    setInterval(() => { $('bookBtn').hidden = !(buddy === 'ollie' && $('sheet').hidden && $('picker').hidden); }, 800);
+    return { shelf, openByTitle, page, speaking, titles };
+  })();
+
   // ---- Know my face (staff only). Runs fully on this iPad: the camera picture is looked at and thrown away
   // every couple of seconds; only a 128-number face code per staff member is kept (localStorage). Nothing is recorded or sent.
   const STAFF_FACES = (() => {
