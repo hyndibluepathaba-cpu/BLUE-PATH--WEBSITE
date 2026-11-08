@@ -1,3 +1,20 @@
 [build]
   publish = "."
   command = ""
+
+# Blue Speaks lives at its own address (the thriving-parfait Netlify site publishes the blue_speaks/ folder).
+[[redirects]]
+  from = "/bluespeaks/*"
+  to = "https://thriving-parfait-63a4e5.netlify.app/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blue_speaks/*"
+  to = "https://thriving-parfait-63a4e5.netlify.app/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/buddies/*"
+  to = "https://thriving-parfait-63a4e5.netlify.app/"
+  status = 301
+  force = true
