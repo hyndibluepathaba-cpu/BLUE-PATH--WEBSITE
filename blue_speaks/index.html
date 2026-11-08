@@ -676,6 +676,15 @@ body.robot.bighead #blueSvg{visibility:hidden}
     <label>Grown-up's name (who Blue sends kids to)
       <input id="staffName" placeholder="Miss Sarah">
     </label>
+    <details id="faceBox">
+      <summary style="font-weight:800;color:var(--muted)">👋 Know my face (staff only, testing)</summary>
+      <p class="small">The buddy says hi to you by name when the camera sees you. Your face is turned into a short list of numbers that stays on this iPad only. Nothing is recorded: no photos or video are saved or sent anywhere. Only staff who sign up here are known; kids are never signed up and stay anonymous.</p>
+      <video id="faceCam" playsinline muted hidden style="width:100%;max-width:320px;border-radius:16px;transform:scaleX(-1);display:block;margin:6px auto"></video>
+      <button type="button" class="back" id="faceEnroll">Sign up my face (uses the name above)</button>
+      <label style="display:flex;gap:10px;align-items:center;font-size:1rem;color:var(--ink)"><input type="checkbox" id="faceOn" style="width:26px;height:26px"> Greet me when the camera sees me</label>
+      <button type="button" class="back" id="faceForget">Forget my face</button>
+      <p class="small" id="faceMsg"></p>
+    </details>
     <div>
       <label>Mode</label>
       <div class="modes" id="modes">
@@ -709,6 +718,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
   </form>
 </div>
 
+<div id="faceBadge" hidden style="position:fixed;top:8px;left:8px;z-index:50;background:rgba(255,255,255,.85);color:#334;border-radius:999px;padding:4px 10px;font:700 12px/1.4 system-ui,sans-serif;pointer-events:none">👋 Face hello on · nothing recorded</div>
 <div class="sheet" id="factsSheet" hidden>
   <div class="card" id="factsCard">
     <h1>⭐ Fun facts</h1>
@@ -782,7 +792,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
   function showPicture(item, showWord) {
     const e = picFor(item);
     $('picEmoji').textContent = e || '🖼️'; $('picWord').textContent = (showWord || !e) ? String(item || '') : '';
-    $('picCard').hidden = false; markActive && markActive();
+    $('picCard').hidden = false; markActive && markActive(); autoClear(30000);
     return !!e;
   }
   function showChoices(items) {
@@ -793,13 +803,16 @@ body.robot.bighead #blueSvg{visibility:hidden}
       b.addEventListener('click', () => {
         box.querySelectorAll('button').forEach(x => x.classList.toggle('picked', x === b));
         if (convo) { remember('Child', `(tapped the picture: ${w})`); try { convo.sendUserMessage(`(The child tapped the picture: ${w})`); } catch (e) {} }
-        markActive();
+        markActive(); autoClear(5000);   // the answer is in: cards leave a few seconds later
       });
       box.append(b);
     });
-    box.hidden = false;
+    box.hidden = false; autoClear(30000);
   }
-  function clearPictures() { $('picCard').hidden = true; $('choices').hidden = true; $('choices').innerHTML = ''; }
+  // picture cards never hang around: gone 30 seconds after they appear, or 5 seconds after a tap
+  let picT = null;
+  function autoClear(ms) { clearTimeout(picT); picT = setTimeout(() => clearPictures(), ms); }
+  function clearPictures() { clearTimeout(picT); $('picCard').hidden = true; $('choices').hidden = true; $('choices').innerHTML = ''; }
   const MODE_ICON = { buddy: '💙', circle: '🎵', social: '👋', question: '🧠', sing: '🎤', library: '📚', playground: '🛝', village: '🏘️' };
   // the buddy's opening line for each mode (sent by the app after 5 quiet seconds; ElevenLabs First message stays empty)
   function greetingFor(m, name) {
@@ -1766,6 +1779,100 @@ function eyeStyles(e,sd,G=GEO.blue){
 
   // keep the screen awake during sessions where supported
   if ('wakeLock' in navigator) document.addEventListener('click', () => navigator.wakeLock.request('screen').catch(() => {}), { once: true });
+  // ---- Know my face (staff only). Runs fully on this iPad: the camera picture is looked at and thrown away
+  // every couple of seconds; only a 128-number face code per staff member is kept (localStorage). Nothing is recorded or sent.
+  const STAFF_FACES = (() => {
+    const KEY = 'blue.staffFaces', ONKEY = 'blue.faceOn', MATCH = 0.5;
+    let ready = null, stream = null, timer = null, lastHi = {}, busy = false;
+    const faces = () => { try { return JSON.parse(store.get(KEY) || '[]'); } catch (e) { return []; } };
+    const msg = t => { $('faceMsg').textContent = t; };
+    function load() {
+      if (ready) return ready;
+      ready = new Promise((res, rej) => {
+        const s = document.createElement('script'); s.src = 'faceapi/face-api.js';
+        s.onload = async () => { try {
+          await faceapi.nets.tinyFaceDetector.loadFromUri('faceapi');
+          await faceapi.nets.faceLandmark68TinyNet.loadFromUri('faceapi');
+          await faceapi.nets.faceRecognitionNet.loadFromUri('faceapi');
+          res();
+        } catch (e) { ready = null; rej(e); } };
+        s.onerror = () => { ready = null; rej(new Error('load')); };
+        document.head.appendChild(s);
+      });
+      return ready;
+    }
+    async function camOn() {
+      if (stream) return;
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 320, height: 240 }, audio: false });
+      $('faceCam').srcObject = stream; await $('faceCam').play().catch(() => {});
+    }
+    function camOff() { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; $('faceCam').srcObject = null; }
+    async function read() {
+      const d = await faceapi.detectSingleFace($('faceCam'), new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
+        .withFaceLandmarks(true).withFaceDescriptor();
+      return d ? Array.from(d.descriptor) : null;
+    }
+    async function enroll() {
+      const name = $('staffName').value.trim();
+      if (!name) { msg('Type your name in "Grown-up\'s name" first.'); return; }
+      stopWatch();
+      try {
+        msg('Loading... (first time takes a few seconds)'); await load(); await camOn(); $('faceCam').hidden = false;
+        const got = [];
+        for (let i = 0; i < 20 && got.length < 5; i++) {
+          msg(`Look at the camera and move your head a little... ${got.length}/5`);
+          const v = await read(); if (v) got.push(v);
+          await new Promise(r => setTimeout(r, 400));
+        }
+        if (got.length < 3) { msg("Couldn't see a face clearly. Try more light, then tap Sign up again."); return; }
+        const list = faces().filter(f => f.name.toLowerCase() !== name.toLowerCase());
+        list.push({ name, codes: got }); store.set(KEY, JSON.stringify(list));
+        $('faceOn').checked = true; store.set(ONKEY, '1');
+        msg(`Done! The buddies know ${name}'s face now. No picture was saved.`);
+      } catch (e) { msg('The camera is blocked or failed to load. Allow the camera for this site and try again.'); }
+      finally { $('faceCam').hidden = true; camOff(); syncWatch(); }
+    }
+    function who(v) {
+      let best = null, bestD = 9;
+      for (const f of faces()) for (const c of f.codes) { const dist = faceapi.euclideanDistance(v, c); if (dist < bestD) { bestD = dist; best = f.name; } }
+      return bestD < MATCH ? best : null;
+    }
+    async function tick() {
+      if (busy || !$('sheet').hidden) return; busy = true;
+      try {
+        const v = await read(); const name = v && who(v);
+        if (name && Date.now() - (lastHi[name] || 0) > 10 * 60 * 1000) {
+          lastHi[name] = Date.now();
+          $('staffName').value = name; store.set('blue.staffName', name);
+          if (convo) { try { convo.sendContextualUpdate(`${name}, a grown-up from the staff, just walked up and the buddy can see them. Say a quick, happy hi to ${name} by name, then carry on with what you were doing.`); } catch (e) {} }
+          else say(`👋 Hi ${name}!`);
+        }
+      } catch (e) {} finally { busy = false; }
+    }
+    function stopWatch() { clearInterval(timer); timer = null; $('faceBadge').hidden = true; camOff(); }
+    async function syncWatch() {
+      const want = $('faceOn').checked && faces().length && $('sheet').hidden;
+      if (!want) { stopWatch(); return; }
+      if (timer) return;
+      try { await load(); await camOn(); timer = setInterval(tick, 2000); $('faceBadge').hidden = false; }
+      catch (e) { stopWatch(); }
+    }
+    $('faceOn').checked = store.get(ONKEY) === '1';
+    $('faceOn').addEventListener('change', () => { store.set(ONKEY, $('faceOn').checked ? '1' : ''); if (!faces().length && $('faceOn').checked) msg('Sign up your face first.'); });
+    $('faceEnroll').addEventListener('click', enroll);
+    $('faceForget').addEventListener('click', () => {
+      const name = $('staffName').value.trim().toLowerCase();
+      const list = faces().filter(f => name && f.name.toLowerCase() !== name);
+      store.set(KEY, JSON.stringify(list)); if (!list.length) { $('faceOn').checked = false; store.set(ONKEY, ''); }
+      msg(name ? 'Forgotten. That face code is deleted from this iPad.' : 'Type the name to forget in "Grown-up\'s name" first.');
+      syncWatch();
+    });
+    // camera only runs while the setup sheet is closed and the switch is on
+    new MutationObserver(syncWatch).observe($('sheet'), { attributes: true, attributeFilter: ['hidden'] });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopWatch(); else syncWatch(); });
+    const n = faces().length; msg(n ? `${n} staff face${n > 1 ? 's' : ''} signed up on this iPad.` : 'No faces signed up yet.');
+    syncWatch();
+  })();
 })();
 </script>
 </body>
