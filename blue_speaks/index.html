@@ -949,7 +949,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
   // (same design as the Buddy Heads Prototype); their beak/mouth follows the live voice. Clyde keeps the old zoom.
 const GEO={blue:{rx:58,ry:66,k:1}, dot:{rx:58,ry:60,k:.88}, ollie:{rx:50,ry:50,k:.74}};
 const FEEL={
-  calm:  {L:-50,Lo:100,droop:0,  pup:[0,0],  by:0, bw:0, beak:0,   smile:.6, ck:["#F59BCB",1]},
+  calm:  {L:-70,Lo:100,droop:0,  pup:[0,0],  by:0, bw:0, beak:0,   smile:.6, ck:["#F59BCB",1]},
   happy: {L:-82,Lo:24, droop:0,  pup:[0,-10],by:-8,bw:0, beak:.25, smile:1,  ck:["#FF84B8",1]},
   sad:   {L:-36,Lo:58, droop:14, pup:[0,14], by:-4,bw:16,beak:0,   smile:-.7,ck:["#D8A6DC",1]},
   tired: {L:-8, Lo:66, droop:8,  pup:[0,14], by:6, bw:6, beak:0,   smile:0,  ck:["#E2A4D6",1]},
@@ -973,20 +973,20 @@ function blueFace(feel="calm"){
     return `<g class="beye ${k}" transform="translate(${cx} 118)">
       <clipPath id="${id}${k}"><ellipse rx="${G.rx}" ry="${G.ry}"/></clipPath>
       <radialGradient id="${id}i${k}" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#5AA7FF"/><stop offset=".6" stop-color="#1F5FD0"/><stop offset="1" stop-color="#0F2F86"/></radialGradient>
-      <ellipse rx="${G.rx}" ry="${G.ry}" fill="#fff" stroke="#1B4FA6" stroke-width="3"/>
+      <ellipse rx="${G.rx}" ry="${G.ry}" fill="#fff" stroke="#3E7BD6" stroke-width="2"/>
       <g clip-path="url(#${id}${k})">
         <g class="pup" style="transform:${st.pup}">
-          <circle r="40" fill="url(#${id}i${k})" stroke="#0B2263" stroke-width="3"/>
-          <circle r="19" fill="#0A1430"/>
-          <circle cx="12" cy="-15" r="12" fill="#fff"/><circle cx="-13" cy="13" r="5" fill="#fff" opacity=".9"/>
+          <circle r="42" fill="url(#${id}i${k})"/>
+          <circle r="24" fill="#0A1430"/>
+          <circle cx="13" cy="-15" r="14" fill="#fff"/><circle cx="-14" cy="14" r="6.5" fill="#fff" opacity=".95"/><circle cx="20" cy="6" r="3" fill="#fff" opacity=".8"/>
         </g>
         <g class="lo" style="transform:${st.lo}"><path d="M-90 200V0Q0-46 90 0V200Z" fill="#2572DA"/><path d="M-90 0Q0-46 90 0" fill="none" stroke="#1D4FA8" stroke-width="3"/></g>
-        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 16 90 0V-200Z" fill="#2F78DE"/><path d="M-90 0Q0 16 90 0" fill="none" stroke="#0B1830" stroke-width="9" stroke-linecap="round"/></g>
+        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 16 90 0V-200Z" fill="#2F78DE"/><path d="M-90 0Q0 16 90 0" fill="none" stroke="#15458F" stroke-width="4" stroke-linecap="round"/></g>
       </g>
       <g class="lash" style="transform:${st.lash}" fill="none" stroke="#0B1830" stroke-linecap="round">
-        <path d="M-2 0C9-5 19-7 30-5" stroke-width="5.5"/><path d="M-5-3C2-13 10-19 21-22" stroke-width="5"/><path d="M-10-6C-8-17-3-25 5-31" stroke-width="4.5"/>
+        <path d="M-2 0C8-4 16-6 24-5" stroke-width="3.5"/><path d="M-6-4C0-12 7-17 15-19" stroke-width="3.5"/>
       </g>
-      <path class="brow" style="transform:${st.brow}" d="M-32-100Q0-114 32-100" fill="none" stroke="#123C86" stroke-width="7" stroke-linecap="round"/>
+      <path class="brow" style="transform:${st.brow}" d="M-26-100Q0-112 26-100" fill="none" stroke="#1C5FBF" stroke-width="6" stroke-linecap="round"/>
       ${tearPath(sd)}
     </g>`;
   };
@@ -998,11 +998,12 @@ function blueFace(feel="calm"){
     <ellipse class="ck" cx="342" cy="210" rx="32" ry="20" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
     <linearGradient id="${id}bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD24A"/><stop offset="1" stop-color="#F6A421"/></linearGradient>
     ${eye("l")}${eye("r")}
-    <g class="mo" style="transform-origin:200px 208px;transform:scaleY(${.06+.94*f.beak})"><path d="M166 208C170 292 230 292 234 208Z" fill="#9E1B2E"/><ellipse cx="200" cy="256" rx="23" ry="12" fill="#F2717E"/><path d="M200 248v10" stroke="#C94458" stroke-width="2" stroke-linecap="round"/></g>
+    <g transform="translate(200 200) scale(.72) translate(-200 -192)"><g class="mo" style="transform-origin:200px 208px;transform:scaleY(${.06+.94*f.beak})"><path d="M166 208C170 292 230 292 234 208Z" fill="#9E1B2E"/><ellipse cx="200" cy="256" rx="23" ry="12" fill="#F2717E"/><path d="M200 248v10" stroke="#C94458" stroke-width="2" stroke-linecap="round"/></g>
     <path class="jaw" d="${blueJaw(f.beak)}" fill="#F39A1F" stroke="#B9690F" stroke-width="3" stroke-linejoin="round"/>
     <path d="M150 186C148 164 252 164 250 186C248 204 228 220 212 231C206 235 203 238 200 238C197 238 194 235 188 231C172 220 152 204 150 186Z" fill="url(#${id}bk)" stroke="#B9690F" stroke-width="3" stroke-linejoin="round"/>
     <path d="M174 177C188 171 212 171 226 177" fill="none" stroke="#FFF0C2" stroke-width="6" stroke-linecap="round" opacity=".9"/>
     <ellipse cx="187" cy="190" rx="3" ry="2.2" fill="#B9690F"/><ellipse cx="213" cy="190" rx="3" ry="2.2" fill="#B9690F"/>
+  </g>
   </g></g>`;
 }
 
@@ -1064,18 +1065,18 @@ function ollieFace(feel="calm"){
     return `<g class="beye ${k}" transform="translate(${cx} 122)">
       <clipPath id="${id}${k}"><circle r="${G.rx}"/></clipPath>
       <radialGradient id="${id}i${k}" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#FFD36B"/><stop offset=".65" stop-color="#E89A1C"/><stop offset="1" stop-color="#A9620A"/></radialGradient>
-      <circle r="${G.rx}" fill="#fff" stroke="#4A2E99" stroke-width="3"/>
+      <circle r="${G.rx}" fill="#fff"/>
       <g clip-path="url(#${id}${k})">
         <g class="pup" style="transform:${st.pup}">
-          <circle r="33" fill="url(#${id}i${k})" stroke="#7A4306" stroke-width="2.5"/>
-          <circle r="18" fill="#1A0F2E"/>
-          <circle cx="10" cy="-12" r="10" fill="#fff"/><circle cx="-11" cy="10" r="4.5" fill="#fff" opacity=".9"/>
+          <circle r="36" fill="url(#${id}i${k})"/>
+          <circle r="21" fill="#1A0F2E"/>
+          <circle cx="11" cy="-12" r="12" fill="#fff"/><circle cx="-12" cy="11" r="5.5" fill="#fff" opacity=".95"/><circle cx="17" cy="5" r="2.5" fill="#fff" opacity=".8"/>
         </g>
         <g class="lo" style="transform:${st.lo}"><path d="M-90 200V0Q0-40 90 0V200Z" fill="#C9B8F2"/><path d="M-90 0Q0-40 90 0" fill="none" stroke="#8E74D6" stroke-width="3"/></g>
-        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 14 90 0V-200Z" fill="#6447C2"/><path d="M-90 0Q0 14 90 0" fill="none" stroke="#2A1660" stroke-width="7" stroke-linecap="round"/></g>
+        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 14 90 0V-200Z" fill="#6447C2"/><path d="M-90 0Q0 14 90 0" fill="none" stroke="#4A2E99" stroke-width="4" stroke-linecap="round"/></g>
       </g>
       <circle r="62" fill="#fff" opacity=".07"/>
-      <circle r="62" fill="none" stroke="#3B2350" stroke-width="10"/>
+      <circle r="60" fill="none" stroke="#5B3F9E" stroke-width="5"/>
       <path d="M-40-34A52 52 0 0 1-14-50" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/>
       <g class="lash" style="transform:${st.lash}"></g>
       <g class="brow" style="transform:${st.brow}" fill="#4F33A8">
@@ -1093,13 +1094,13 @@ function ollieFace(feel="calm"){
     <g class="shh" fill="#fff" stroke="#3B2350" stroke-width="2" paint-order="stroke" font-family="Baloo 2,Trebuchet MS,sans-serif" font-weight="800"><text x="252" y="262" font-size="40">shhh</text></g>
     <ellipse class="ck" cx="54" cy="214" rx="30" ry="18" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
     <ellipse class="ck" cx="346" cy="214" rx="30" ry="18" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
-    <path d="M68 122C40 118 22 112 6 104M332 122C360 118 378 112 394 104" fill="none" stroke="#3B2350" stroke-width="8" stroke-linecap="round"/>
+    <path d="M70 120C46 116 28 110 14 104M330 120C354 116 372 110 386 104" fill="none" stroke="#5B3F9E" stroke-width="4" stroke-linecap="round"/>
     ${eye("l")}${eye("r")}
-    <g class="mo" style="transform-origin:200px 214px;transform:scaleY(${.06+.94*f.beak})"><path d="M182 212C184 268 216 268 218 212Z" fill="#4A0F24"/><ellipse cx="200" cy="248" rx="12" ry="7" fill="#F0607F"/></g>
-    <path class="jaw" style="transform:translateY(${28*f.beak}px)" d="M184 214C192 220 208 220 216 214C214 226 208 236 200 242C192 236 186 226 184 214Z" fill="#D88A1C" stroke="#8A4E0E" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M178 150C182 136 218 136 222 150C228 176 216 214 200 238C184 214 172 176 178 150Z" fill="#F6B13A" stroke="#8A4E0E" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M190 148C196 144 206 144 212 148" fill="none" stroke="#FFE3A3" stroke-width="4" stroke-linecap="round"/>
-    <path d="M184 138C190 128 210 128 216 138" fill="none" stroke="#3B2350" stroke-width="10" stroke-linecap="round"/>
+    <g class="mo" style="transform-origin:200px 186px;transform:scaleY(${.06+.94*f.beak})"><path d="M186 184C188 222 212 222 214 184Z" fill="#4A0F24"/><ellipse cx="200" cy="208" rx="9" ry="5" fill="#F0607F"/></g>
+    <path class="jaw" style="transform:translateY(${28*f.beak}px)" d="M188 186C194 190 206 190 212 186C210 194 206 199 200 202C194 199 190 194 188 186Z" fill="#E59B2A" stroke="#B0701A" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M184 156C186 146 214 146 216 156C218 170 210 182 200 190C190 182 182 170 184 156Z" fill="#F8BE4C" stroke="#B0701A" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M192 154C196 151 204 151 208 154" fill="none" stroke="#FFE7B0" stroke-width="3" stroke-linecap="round"/>
+    <path d="M186 140C192 132 208 132 214 140" fill="none" stroke="#5B3F9E" stroke-width="5" stroke-linecap="round"/>
   </g></g>`;
 }
 /* neat, lightly segmented ear tuft: three layered feathers */
@@ -1125,7 +1126,7 @@ const FACE={blue:blueFace, dot:dotFace, ollie:ollieFace};
 /* how each mouth opens: Blue's bottom beak drops; Dot's mouth opens wide */
 function mouthStyles(who,v){
   if(who==="blue") return {jawD:blueJaw(v), mo:`scaleY(${.06+.94*v})`};
-  if(who==="ollie") return {jaw:`translateY(${28*v}px)`, mo:`scaleY(${.06+.94*v})`};
+  if(who==="ollie") return {jaw:`translateY(${18*v}px)`, mo:`scaleY(${.06+.94*v})`};
   return {jaw:"", mo:`scaleY(${.03+.97*v})`};
 }
 /* where the lid edge meets the eye's outer rim, so lashes always grow from the lid, never the eyeball */
@@ -1163,7 +1164,7 @@ function eyeStyles(e,sd,G=GEO.blue){
     if (!headOn()) { box.innerHTML = ''; hWho = null; hBf = null; clearTimeout(blinkT); return; }
     if (hWho === w && hBf) return;
     hWho = w; box.style.setProperty('--face', HEADBG[w]);
-    box.innerHTML = `<svg viewBox="0 -18 400 318" preserveAspectRatio="xMidYMid meet">${FACE[w]()}</svg>`;
+    box.innerHTML = `<svg viewBox="-110 -80 620 470" preserveAspectRatio="xMidYMid meet">${FACE[w]()}</svg>`;
     hBf = box.querySelector('.bf'); const f = hFeel; hFeel = ''; headFeel(f);
     clearTimeout(blinkT); blinkT = setTimeout(headBlink, 2600);
   }
