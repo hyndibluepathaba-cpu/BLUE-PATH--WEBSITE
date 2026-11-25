@@ -465,8 +465,8 @@ body.robot #blueSvg .b-shadow { visibility: hidden; }
 /* Big Head (robot mode): each buddy's own screen face, from the Buddy Heads Prototype (Nov 8, 2026) */
 #robotFace{display:none;position:fixed;inset:0;z-index:1;background:var(--face,#2572DA)}
 #robotFace > svg{display:block;width:100%;height:100%;overflow:visible}
-body.robot.bighead #robotFace{display:block}
-body.robot.bighead #blueSvg{visibility:hidden}
+body.bighead #robotFace{display:block}
+body.bighead #blueSvg{visibility:hidden}   /* Big Head on, or Ollie (always his picture puppet) */
 #robotFace .bf .jaw,#robotFace .bf .mo{transition:none}
 .bf *{transform-box:view-box}
 .bf .up,.bf .lo,.bf .pup,.bf .lash,.bf .brow{transition:transform .32s cubic-bezier(.3,.7,.3,1)}
@@ -496,6 +496,44 @@ body.robot.bighead #blueSvg{visibility:hidden}
 .bf .whole.spin{transform-origin:200px 140px;animation:spin360 1.5s cubic-bezier(.5,0,.3,1)}
 @keyframes spin360{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.bf .whole,.bf .drop,.bf .zzz text{animation:none!important}.f-sleepy .bf .zzz text{opacity:1}.f-sad .bf .drop{opacity:1}}
+
+/* Big Head Ollie (picture puppet): gentle breathing, and every move acted out with his head, body and waving wing */
+.bf[data-buddy="ollie"] .breath{transform-origin:236px 640px;animation:oBreathe 3.8s ease-in-out infinite}
+@keyframes oBreathe{50%{transform:scale(1.012,1.006) rotate(-.6deg)}}
+.bf[data-buddy="ollie"] .owing{transform-origin:360.8px 347.2px;animation:oWingIdle 5s ease-in-out infinite}
+@keyframes oWingIdle{50%{transform:rotate(-3deg)}}
+.bf[data-buddy="ollie"] .mv{transform-origin:236px 600px}
+#robotFace[data-move] .bf[data-buddy="ollie"] .mv,#robotFace[data-move] .bf[data-buddy="ollie"] .owing{animation-duration:var(--mv,3000ms);animation-timing-function:ease-in-out;animation-fill-mode:both}
+#robotFace[data-move="wave"] .owing,#robotFace[data-move="highfive"] .owing{animation-name:oWave}
+@keyframes oWave{0%,100%{transform:none}10%,30%,50%,70%{transform:rotate(-22deg)}20%,40%,60%,80%{transform:rotate(8deg)}}
+#robotFace[data-move="flap"] .owing,#robotFace[data-move="cheer"] .owing,#robotFace[data-move="clap"] .owing{animation-name:oFlap}
+@keyframes oFlap{0%,100%{transform:none}6%,18%,30%,42%,54%,66%,78%,90%{transform:rotate(-26deg)}12%,24%,36%,48%,60%,72%,84%{transform:rotate(6deg)}}
+#robotFace[data-move="flap"] .mv,#robotFace[data-move="cheer"] .mv,#robotFace[data-move="hop"] .mv,#robotFace[data-move="jump"] .mv{animation-name:oHop}
+@keyframes oHop{0%,100%{transform:none}10%,30%,50%,70%,90%{transform:translateY(-22px)}20%,40%,60%,80%{transform:translateY(0)}}
+#robotFace[data-move="reach"] .owing,#robotFace[data-move="wingsout"] .owing,#robotFace[data-move="head"] .owing{animation-name:oReach}
+@keyframes oReach{0%,100%{transform:none}15%,85%{transform:rotate(-30deg)}}
+#robotFace[data-move="reach"] .mv{animation-name:oStretch}
+@keyframes oStretch{0%,100%{transform:none}15%,85%{transform:scale(1.02,1.05)}}
+#robotFace[data-move="nod"] .mv{animation-name:oNod}
+@keyframes oNod{0%,100%{transform:none}12%,37%,62%{transform:translateY(10px) rotate(1deg)}25%,50%,75%{transform:translateY(-4px)}}
+#robotFace[data-move="shake"] .mv{animation-name:oShake}
+@keyframes oShake{0%,100%{transform:none}10%,30%,50%,70%{transform:rotate(-4deg)}20%,40%,60%,80%{transform:rotate(4deg)}}
+#robotFace[data-move="wiggle"] .mv,#robotFace[data-move="tummy"] .mv{animation-name:oWiggle}
+@keyframes oWiggle{0%,100%{transform:none}8%,24%,40%,56%,72%,88%{transform:rotate(-3deg) translateX(-6px)}16%,32%,48%,64%,80%{transform:rotate(3deg) translateX(6px)}}
+#robotFace[data-move="spin"] .mv{animation-name:oSpin}
+@keyframes oSpin{0%,100%{transform:none}25%{transform:scaleX(.05)}50%{transform:scaleX(-1)}75%{transform:scaleX(.05)}}
+#robotFace[data-move="stomp"] .mv,#robotFace[data-move="march"] .mv,#robotFace[data-move="leftleg"] .mv,#robotFace[data-move="rightleg"] .mv{animation-name:oMarch}
+@keyframes oMarch{0%,100%{transform:none}12%,37%,62%,87%{transform:rotate(-2.5deg) translateY(-8px)}25%,50%,75%{transform:rotate(2.5deg) translateY(-8px)}}
+#robotFace[data-move="bow"] .mv,#robotFace[data-move="toes"] .mv,#robotFace[data-move="touch"] .mv{animation-name:oBow}
+@keyframes oBow{0%,100%{transform:none}20%,75%{transform:translateY(26px) scale(1,.95) rotate(2deg)}}
+#robotFace[data-move="sit"] .mv{animation-name:oSit}
+@keyframes oSit{0%,100%{transform:none}15%,85%{transform:translateY(34px) scale(1.02,.94)}}
+#robotFace[data-move="freeze"] .breath,#robotFace[data-move="freeze"] .owing{animation-play-state:paused}
+#robotFace[data-move="eyes"] .bf[data-buddy="ollie"] .up{animation:oLidUp var(--mv,3000ms) ease-in-out both}
+#robotFace[data-move="eyes"] .bf[data-buddy="ollie"] .lo{animation:oLidLo var(--mv,3000ms) ease-in-out both}
+@keyframes oLidUp{0%,100%{transform:translateY(-46px)}15%,85%{transform:translateY(16px)}}
+@keyframes oLidLo{0%,100%{transform:translateY(66px)}15%,85%{transform:translateY(16px)}}
+@media (prefers-reduced-motion:reduce){.bf[data-buddy="ollie"] .breath,.bf[data-buddy="ollie"] .owing{animation:none!important}}
 
 .bookbtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; z-index: 6; border: 0; border-radius: 999px; padding: 12px 18px; font: 800 1.1rem/1 system-ui, sans-serif; background: #6B4FA8; color: #fff; box-shadow: 0 6px 0 rgba(0,0,0,.18); }
 .bookwrap { position: fixed; inset: 0; z-index: 20; background: rgba(20,28,60,.25); display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
@@ -723,8 +761,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
         <button type="button" data-mode="social">Social Time</button>
         <button type="button" data-mode="question">Question Time</button>
         <button type="button" data-mode="sing">Sing Together</button>
-        <button type="button" data-mode="library">Library (Ollie)</button>
-        <button type="button" data-mode="story">Story Time (Ollie)</button>
+        <button type="button" data-mode="library">Library &amp; Story Time (Ollie)</button>
         <button type="button" data-mode="playground">Playground (Blue)</button>
         <button type="button" data-mode="village">Village Welcome (Dot)</button>
       </div>
@@ -853,7 +890,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
     if (m === 'sing') return `${b.hello} It's Sing Together time! I'm ${b.name}. Do you want to sing a song with me? Pick a song, or tell me which one!`;
     if (m === 'question') return `${b.hello} It's Question Time! I'm ${b.name}. I'll ask, and you answer. You can say it, point, sign, or use your talker. Ready?`;
     if (m === 'social') return `Hi ${n}! I'm ${b.name}. It's Social Time! Let's practice saying hi. Can you wave hello to me?`;
-    if (m === 'library') return `${b.hello} Welcome to the library! I'm ${b.name}. Should we find a book, or play a story game?`;
+    if (m === 'library' || m === 'story') return `${b.hello} Welcome to the library! I'm ${b.name}. What do you like?`;
     if (m === 'story') return `${b.hello} It's Story Time, friends! I'm ${b.name}. Let's pick a book and read it together!`;
     if (m === 'playground') return `${b.hello} Playground time, friends! I'm ${b.name}. Ready to move? Let's play a game!`;
     if (m === 'village') return `${b.hello} Welcome to Blue Path Village! I'm ${b.name}. Want to see where we can go today?`;
@@ -890,7 +927,9 @@ body.robot.bighead #blueSvg{visibility:hidden}
   $('agentOllie').value = store.get('ollie.agentId'); $('agentRobo').value = store.get('robo.agentId'); $('agentDino').value = store.get('dino.agentId');
   // built-in agent IDs for each buddy (public IDs, not keys); staff can still override them in setup
   const DEFAULT_IDS = { blue: DEFAULT_AGENT, ollie: 'agent_6201m43py0jvf9sac44c813ytkws', robo: 'agent_8001m43r2jxefbqr3dsrm3h8tn6z', dino: 'agent_0701m44fqx3wfzpvejdzje1pt49w' };
-  const agentFor = b => store.get(BUDDIES[b].key) || DEFAULT_IDS[b] || '';
+  // TEST COPY ONLY: Blue and Ollie use their test agents (new turn-taking rules), whatever is saved on this iPad
+  const TEST_IDS = {};   // live: real Blue and Ollie agents
+  const agentFor = b => TEST_IDS[b] || store.get(BUDDIES[b].key) || DEFAULT_IDS[b] || '';
   // costume colours on the parts all buddies share (set as plain attributes: older iPads miss CSS-set colour fades)
   const PAINT = {
     wing:  { blue: 'url(#bWing) #1C6FD0', ollie: 'url(#oWing) #6245B8', robo: 'url(#rWing) #8FAAB8', dino: 'url(#bWing) #1C6FD0' },
@@ -947,7 +986,7 @@ body.robot.bighead #blueSvg{visibility:hidden}
 
   // ---- robot mode ("Big Head"): saved on this iPad. Blue, Dot and Ollie get their own full-screen face
   // (same design as the Buddy Heads Prototype); their beak/mouth follows the live voice. Clyde keeps the old zoom.
-const GEO={blue:{rx:58,ry:66,k:1}, dot:{rx:58,ry:60,k:.88}, ollie:{rx:50,ry:50,k:.74}};
+const GEO={blue:{rx:58,ry:66,k:1}, dot:{rx:58,ry:60,k:.88}, ollie:{rx:42,ry:39,k:.66}};
 const FEEL={
   calm:  {L:-70,Lo:100,droop:0,  pup:[0,0],  by:0, bw:0, beak:0,   smile:.6, ck:["#F59BCB",1]},
   happy: {L:-82,Lo:24, droop:0,  pup:[0,-10],by:-8,bw:0, beak:.25, smile:1,  ck:["#FF84B8",1]},
@@ -1055,53 +1094,39 @@ function dotFace(feel="calm"){
   </g></g>`;
 }
 
-/* Ollie: an older, wise owl. Big round eyes in a soft facial disc, glasses that rest on his beak with arms
-   reaching back to his head, neat feathered brows, and an owl beak that curves down from between his eyes to
-   a point. The bottom half of the beak drops to talk. */
+/* Ollie: made from hyndi's own fuzzy Ollie picture (Nov 25, 2026). Layers cut from the art: the wing waves behind
+   his body, the lower beak/mouth stretches with his voice, and soft lids slide over his real eyes to blink. */
+const OLLIE_ART='ollie/';
 function ollieFace(feel="calm"){
   const id="of"+(faceN++), f=FEEL[feel], G=GEO.ollie;
+  const EYE={l:{x:172.3,y:193,rx:42,ry:39},r:{x:307.2,y:160,rx:41,ry:39.5}};
   const eye=k=>{
-    const sd=k==="l"?-1:1, st=eyeStyles(eyeOf(f,k),sd,G), cx=k==="l"?130:270;
-    return `<g class="beye ${k}" transform="translate(${cx} 122)">
-      <clipPath id="${id}${k}"><circle r="${G.rx}"/></clipPath>
-      <radialGradient id="${id}i${k}" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#FFD36B"/><stop offset=".65" stop-color="#E89A1C"/><stop offset="1" stop-color="#A9620A"/></radialGradient>
-      <circle r="${G.rx}" fill="#fff"/>
+    const sd=k==="l"?-1:1, st=eyeStyles(eyeOf(f,k),sd,G), E=EYE[k];
+    return `<g class="beye ${k}" transform="translate(${E.x} ${E.y})">
+      <clipPath id="${id}${k}"><ellipse rx="${E.rx}" ry="${E.ry}"/></clipPath>
+      <linearGradient id="${id}u${k}" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#E9D6C4"/><stop offset="1" stop-color="#F7E9D9"/></linearGradient>
+      <linearGradient id="${id}d${k}" x1="0" y1="1" x2="0" y2="0"><stop offset=".55" stop-color="#E9D6C4"/><stop offset="1" stop-color="#F7E9D9"/></linearGradient>
       <g clip-path="url(#${id}${k})">
-        <g class="pup" style="transform:${st.pup}">
-          <circle r="36" fill="url(#${id}i${k})"/>
-          <circle r="21" fill="#1A0F2E"/>
-          <circle cx="11" cy="-12" r="12" fill="#fff"/><circle cx="-12" cy="11" r="5.5" fill="#fff" opacity=".95"/><circle cx="17" cy="5" r="2.5" fill="#fff" opacity=".8"/>
-        </g>
-        <g class="lo" style="transform:${st.lo}"><path d="M-90 200V0Q0-40 90 0V200Z" fill="#C9B8F2"/><path d="M-90 0Q0-40 90 0" fill="none" stroke="#8E74D6" stroke-width="3"/></g>
-        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 14 90 0V-200Z" fill="#6447C2"/><path d="M-90 0Q0 14 90 0" fill="none" stroke="#4A2E99" stroke-width="4" stroke-linecap="round"/></g>
+        <g class="pup"></g>
+        <g class="lo" style="transform:${st.lo}"><path d="M-90 200V0Q0-40 90 0V200Z" fill="url(#${id}d${k}) #F1E2D0"/><path d="M-90 0Q0-40 90 0" fill="none" stroke="#C9A88E" stroke-width="2.5"/></g>
+        <g class="up" style="transform:${st.up}"><path d="M-90-200V0Q0 14 90 0V-200Z" fill="url(#${id}u${k}) #F1E2D0"/><path d="M-90 0Q0 14 90 0" fill="none" stroke="#3B2418" stroke-width="3.5" stroke-linecap="round"/></g>
       </g>
-      <circle r="62" fill="#fff" opacity=".07"/>
-      <circle r="60" fill="none" stroke="#5B3F9E" stroke-width="5"/>
-      <path d="M-40-34A52 52 0 0 1-14-50" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/>
       <g class="lash" style="transform:${st.lash}"></g>
-      <g class="brow" style="transform:${st.brow}" fill="#4F33A8">
-        <path d="M-46-80C-30-98 10-102 44-86C20-84-12-82-46-80Z"/><path d="M-30-86C-14-100 16-102 36-92" fill="none" stroke="#7A5CD6" stroke-width="3" stroke-linecap="round"/>
-      </g>
+      <g class="brow" style="transform:${st.brow}"></g>
       ${tearPath(sd)}
     </g>`;
   };
-  return `<rect x="-3000" y="-3000" width="6400" height="6400" fill="#7255CC"/>
-  <ellipse cx="200" cy="352" rx="200" ry="104" fill="#E3D9FA"/>
-  <g class="bf" data-buddy="ollie"><g class="whole">
-    <g class="tufts">${ollieTuft(-1)}${ollieTuft(1)}</g>
-    <path d="M200 66C150 26 64 40 52 118C44 176 92 214 150 206C172 204 188 198 200 192C212 198 228 204 250 206C308 214 356 176 348 118C336 40 250 26 200 66Z" fill="#C9B8F2"/>
-    ${extras}
-    <g class="shh" fill="#fff" stroke="#3B2350" stroke-width="2" paint-order="stroke" font-family="Baloo 2,Trebuchet MS,sans-serif" font-weight="800"><text x="252" y="262" font-size="40">shhh</text></g>
-    <ellipse class="ck" cx="54" cy="214" rx="30" ry="18" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
-    <ellipse class="ck" cx="346" cy="214" rx="30" ry="18" fill="${f.ck[0]}" opacity="${f.ck[1]}"/>
-    <path d="M70 120C46 116 28 110 14 104M330 120C354 116 372 110 386 104" fill="none" stroke="#5B3F9E" stroke-width="4" stroke-linecap="round"/>
+  return `<rect x="-3000" y="-3000" width="6400" height="6400" fill="#F2E8D6"/>
+  <image href="${OLLIE_ART}bg.jpg" x="-320" y="-320" width="1040" height="960" preserveAspectRatio="none"/>
+  <g class="bf" data-buddy="ollie"><g class="whole"><g class="mv"><g class="breath">
+    <g class="owing"><image href="${OLLIE_ART}wing.webp" x="283.84" y="159.48" width="254.28" height="375.44"/></g>
+    <image href="${OLLIE_ART}body.webp" x="-12.04" y="-35" width="496.08" height="676.52"/>
+    <g class="ckg" opacity=".32"><ellipse class="ck" cx="116" cy="262" rx="20" ry="11" fill="${f.ck[0]}" opacity="${f.ck[1]}"/><ellipse class="ck" cx="352" cy="236" rx="18" ry="10" fill="${f.ck[0]}" opacity="${f.ck[1]}"/></g>
+    <g class="mo" style="transform-origin:251.6px 222.4px;transform:scaleY(${mouthStyles("ollie",f.beak).mo.match(/[\d.]+/)[0]})"><image href="${OLLIE_ART}mouth.webp" x="208.96" y="203.16" width="85.8" height="79.04"/></g>
     ${eye("l")}${eye("r")}
-    <g class="mo" style="transform-origin:200px 186px;transform:scaleY(${.06+.94*f.beak})"><path d="M186 184C188 222 212 222 214 184Z" fill="#4A0F24"/><ellipse cx="200" cy="208" rx="9" ry="5" fill="#F0607F"/></g>
-    <path class="jaw" style="transform:translateY(${28*f.beak}px)" d="M188 186C194 190 206 190 212 186C210 194 206 199 200 202C194 199 190 194 188 186Z" fill="#E59B2A" stroke="#B0701A" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M184 156C186 146 214 146 216 156C218 170 210 182 200 190C190 182 182 170 184 156Z" fill="#F8BE4C" stroke="#B0701A" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M192 154C196 151 204 151 208 154" fill="none" stroke="#FFE7B0" stroke-width="3" stroke-linecap="round"/>
-    <path d="M186 140C192 132 208 132 214 140" fill="none" stroke="#5B3F9E" stroke-width="5" stroke-linecap="round"/>
-  </g></g>`;
+    ${extras}
+    <g class="shh" fill="#fff" stroke="#3B2350" stroke-width="2" paint-order="stroke" font-family="Baloo 2,Trebuchet MS,sans-serif" font-weight="800"><text x="300" y="300" font-size="40">shhh</text></g>
+  </g></g></g></g>`;
 }
 /* neat, lightly segmented ear tuft: three layered feathers */
 function ollieTuft(sd){
@@ -1126,7 +1151,7 @@ const FACE={blue:blueFace, dot:dotFace, ollie:ollieFace};
 /* how each mouth opens: Blue's bottom beak drops; Dot's mouth opens wide */
 function mouthStyles(who,v){
   if(who==="blue") return {jawD:blueJaw(v), mo:`scaleY(${.06+.94*v})`};
-  if(who==="ollie") return {jaw:`translateY(${18*v}px)`, mo:`scaleY(${.06+.94*v})`};
+  if(who==="ollie") return {jaw:"", mo:`scaleY(${.3+.8*v})`};   // his smile stays a little open, like his picture
   return {jaw:"", mo:`scaleY(${.03+.97*v})`};
 }
 /* where the lid edge meets the eye's outer rim, so lashes always grow from the lid, never the eyeball */
@@ -1147,7 +1172,7 @@ function eyeStyles(e,sd,G=GEO.blue){
 }
 
   const HEADKEY = { blue: 'blue', robo: 'dot', ollie: 'ollie' };
-  const HEADBG = { blue: '#2572DA', dot: '#C2D9E3', ollie: '#7255CC' };
+  const HEADBG = { blue: '#2572DA', dot: '#C2D9E3', ollie: '#F2E8D6' };
   // picker cards show each buddy's current face (the same face as Big Head), not the old drawing
   $('pickRow').querySelectorAll('button').forEach(btn => {
     const w = HEADKEY[btn.dataset.buddy]; if (!w) return;
@@ -1157,7 +1182,7 @@ function eyeStyles(e,sd,G=GEO.blue){
     old.replaceWith(holder);
   });
   let hWho = null, hFeel = 'calm', hBf = null, blinkT = null;
-  function headOn() { return document.body.classList.contains('robot') && !!HEADKEY[buddy]; }
+  function headOn() { return (document.body.classList.contains('robot') || buddy === 'ollie') && !!HEADKEY[buddy]; }   // Ollie always shows his fuzzy picture self
   function drawRobotFace() {
     const box = $('robotFace'), w = HEADKEY[buddy];
     document.body.classList.toggle('bighead', headOn());
@@ -1245,6 +1270,16 @@ function eyeStyles(e,sd,G=GEO.blue){
       ? s.lines.map(l => `<p>${l.replace(/\*([^*]+)\*/g, style === 'fill' ? '<span class="fw">$1</span>' : '<b>$1</b>')}</p>`).join('')
       : `<div class="lyr-icon">${s.icon}</div>`;
     $('lyrics').hidden = false;
+  }
+  // WALL EARS (Big Head / wall iPads only): ears off while the buddy talks, back on just after she stops.
+  // On the wall the speaker and mic are boxed in, so the buddy was hearing her own voice (and getting deaf).
+  // Hand-held iPads keep barge-in. Staff Pause, the red alert and sing-together still win.
+  let earsT = 0;
+  function wallEars(m) {
+    if (!convo || !document.body.classList.contains('robot')) return;
+    clearTimeout(earsT);
+    if (m === 'speaking') { try { convo.setMicMuted(true); } catch (e) {} }
+    else earsT = setTimeout(() => { if (convo && !paused && !alerting && !songHoldsMic()) { try { convo.setMicMuted(false); } catch (e) {} } }, 800);
   }
   function startSong(s, style) {
     if (!convo || paused || alerting || !s) return;
@@ -1339,6 +1374,12 @@ function eyeStyles(e,sd,G=GEO.blue){
   $('openSafariOk').onclick = () => { $('openSafari').hidden = true; };
   $('start').addEventListener('click', startTalk);
   async function startTalk() {
+    if (starting || convo) return;      // ONE buddy at a time: a second tap or a call-back never opens a second Blue (that was the echo and the late answers)
+    starting = true;
+    try { await startTalkInner(); } finally { starting = false; }
+  }
+  let starting = false;
+  async function startTalkInner() {
     ensureAudio();                      // must happen inside the tap, before any await, or iOS stays silent
     endActivity();                      // live chat and the scripted player never run together
     if (!window.ElevenLabsClient) { say(`${bname()} can't connect. Check the internet and reload.`); return; }
@@ -1367,9 +1408,9 @@ function eyeStyles(e,sd,G=GEO.blue){
           staff_check_in: ({ reason } = {}) => { raiseAlert(reason); return 'The red staff alert is showing and you are paused. Say nothing more until staff clear it.'; },
           // Blue calls this to act out a move on screen; move is one of MOVES (or plain words like "touch your toes")
           // hold up one picture card: "What is it?" (tact)
-          show_picture: ({ item, show_word } = {}) => { if (recap) recap.pics = String(item || ''); const ok = showPicture(item, show_word); return ok ? `A picture of ${item} is showing.` : `No picture for ${item}; the word is showing instead.`; },
+          show_picture: ({ item, show_word } = {}) => { if (picsOff()) return PICS_OFF; if (recap) recap.pics = String(item || ''); const ok = showPicture(item, show_word); return ok ? `A picture of ${item} is showing.` : `No picture for ${item}; the word is showing instead.`; },
           // 2-4 big pictures the child can tap: "Touch the dog" (listener) or "What do you want?" (mand)
-          show_choices: ({ items } = {}) => { const list = String(items || '').split(',').map(x => x.trim()).filter(Boolean); showChoices(list); if (recap) recap.pics = list.join(', '); return `Showing ${list.join(', ')}. The child's tap arrives as a message.`; },
+          show_choices: ({ items } = {}) => { if (picsOff()) return PICS_OFF; const list = String(items || '').split(',').map(x => x.trim()).filter(Boolean); showChoices(list); if (recap) recap.pics = list.join(', '); return `Showing ${list.join(', ')}. The child's tap arrives as a message.`; },
           // read-along books (Ollie): the page shows big on screen and the buddy reads it out loud
           show_bookshelf: () => { BOOK.shelf(); return 'The bookshelf is showing. Books: ' + BOOK.titles() + '. Ask which one, or the child can tap a cover.'; },
           open_book: ({ title } = {}) => BOOK.openByTitle(title),
@@ -1388,11 +1429,12 @@ function eyeStyles(e,sd,G=GEO.blue){
           }
         },
         onConnect: () => { if (my !== talkId || !recap) return; convoMode = mode; setState('listening', 'Listening'); renderShelf(); startGuard(back ? recap.startedAt : 0); recap.startedAt = startedAt; recap.droppedAt = 0; connectedAt = Date.now(); if (back && recap.lines.length) pickUp(); else waitForChild(); ensureAudio(); },
-        onModeChange: ({ mode: m }) => { markActive(); BOOK.speaking(m === 'speaking'); songMode(m); if (m === 'speaking') greeted = true; if (!paused && !alerting) setState(m, m === 'speaking' ? `${bname()} is talking` : 'Listening'); },
-        onMessage: ({ message, role, source }) => { markActive(); if ((role || source) === 'user') { greeted = true; checkWords(message); songHeard(message, true); remember('Child', message); } if ((role || source) === 'agent' || source === 'ai') { checkBuddy(message); if (alerting) return; if (!song) say(message); songHeard(message, false); remember(bname(), message); const m = moveFor(message); if (m) doMove(m); } },
+        onModeChange: ({ mode: m }) => { markActive(); wallEars(m); BOOK.speaking(m === 'speaking'); songMode(m); if (m === 'speaking') greeted = true; if (!paused && !alerting) setState(m, m === 'speaking' ? `${bname()} is talking` : 'Listening'); },
+        onMessage: ({ message, role, source }) => { markActive(); if ((role || source) === 'user') { greeted = true; lastHeard = String(message || ''); checkWords(message); songHeard(message, true); remember('Child', message); } if ((role || source) === 'agent' || source === 'ai') { checkBuddy(message); if (alerting) return; if (!song) say(message); songHeard(message, false); remember(bname(), message); const m = moveFor(message); if (m) doMove(m); } },
         onDisconnect: () => { if (my !== talkId) return; if (endingOnPurpose) endedCleanly(); else dropped(); },
         onError: (msg) => { console.warn(msg); }   // a real drop also fires onDisconnect, which brings the buddy back
       });
+      if (my !== talkId) { const extra = convo; convo = null; try { await extra.endSession(); } catch (e) {} return; }   // staff stopped or restarted while this one was connecting: hang it up
     } catch (err) {
       convo = null;
       setState('', 'Not connected');
@@ -1407,6 +1449,10 @@ function eyeStyles(e,sd,G=GEO.blue){
   // interruptions ON: the mic stays open while the buddy talks, so a child can cut in
   // and the buddy stops to listen (ElevenLabs barge-in). Staff Pause still silences it instantly.
   let greetT = 0, greeted = false, sessionKid = '';
+  // picture cards belong to drills and games; in chat, library and playground they show only if someone asked for one
+  let lastHeard = '';
+  const PICS_OFF = 'Not shown: no picture cards right now. Do not show pictures; just talk with the child, then wait for their answer.';
+  const picsOff = () => ['buddy', 'library', 'story', 'playground'].includes(convoMode || mode) && !/\b(picture|pictures|show me|see it|card|cards|i spy)\b/i.test(lastHeard);
   function waitForChild() {
     clearTimeout(greetT); greeted = false;
     const t0 = Date.now();
@@ -1684,11 +1730,12 @@ function eyeStyles(e,sd,G=GEO.blue){
     bird.style.setProperty('--mv', ms + 'ms');
     delete bird.dataset.move; bird.getBoundingClientRect();   // restart, even when it is the same move again
     bird.dataset.move = name; moveStart = Date.now();
+    const rf = $('robotFace'); rf.style.setProperty('--mv', ms + 'ms'); delete rf.dataset.move; rf.getBoundingClientRect(); rf.dataset.move = name;
     cheerUntil = name === 'cheer' ? Date.now() + ms : 0;
     moveT = setTimeout(stopMove, ms + 50);
     return true;
   }
-  function stopMove() { clearTimeout(moveT); delete bird.dataset.move; cheerUntil = 0; }
+  function stopMove() { clearTimeout(moveT); delete bird.dataset.move; delete $('robotFace').dataset.move; cheerUntil = 0; }
   window.Blue = { doMove, moveFor, MOVES };   // for staff testing from the browser console
 
   // ---- scripted activities: pre-made clips in audio/, listed in audio/lines.json
